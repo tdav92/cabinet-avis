@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Votre avis — Cabinet Dentaire</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:    #0f1923;
+    --ink2:   #3a4a5a;
+    --ink3:   #7a8a9a;
+    --gold:   #c9a84c;
+    --gold2:  #e8c96a;
+    --cream:  #faf8f3;
+    --white:  #ffffff;
+    --green:  #2d6a4f;
+    --green2: #1a4731;
+    --green-l:#d8f3dc;
+    --red:    #9b2335;
+    --shadow: 0 16px 48px rgba(15,25,35,0.14);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 40px 20px 80px;
+  }
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background:
+      radial-gradient(ellipse 70% 50% at 15% 15%, rgba(201,168,76,0.08) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 70% at 85% 85%, rgba(26,58,92,0.06) 0%, transparent 55%);
+    pointer-events:none;
+  }
+
+  .card {
+    position: relative; z-index: 1;
+    background: var(--white);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    max-width: 580px; width: 100%;
+    overflow: hidden;
+    animation: fadeUp 0.5s ease both;
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:none} }
+
+  .card-header {
+    background: linear-gradient(135deg, #0f1923 0%, #1a3a5c 100%);
+    padding: 40px;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .card-header::before {
+    content:'';
+    position:absolute; inset:0;
+    background: radial-gradient(ellipse 80% 100% at 50% 120%, rgba(201,168,76,0.12) 0%, transparent 60%);
+  }
+  .header-icon { font-size: 42px; margin-bottom: 14px; position:relative; }
+  .card-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px; color: var(--white); font-weight: 700;
+    margin-bottom: 6px; position:relative;
+  }
+  .card-header p { font-size: 13px; color: rgba(255,255,255,0.45); position:relative; }
+
+  .card-body { padding: 40px; }
+
+  .greeting {
+    font-size: 16px; color: var(--ink2); line-height: 1.7;
+    margin-bottom: 32px; text-align: center;
+  }
+  .greeting strong { color: var(--ink); }
+
+  /* ── Étoiles ── */
+  .stars-section { margin-bottom: 36px; }
+  .stars-label {
+    font-size: 13px; font-weight: 600; color: var(--ink3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 14px; text-align: center;
+  }
+  .stars {
+    display: flex; justify-content: center; gap: 10px;
+  }
+  .star {
+    font-size: 40px; cursor: pointer;
+    filter: grayscale(1) opacity(0.3);
+    transition: all 0.15s;
+    user-select: none;
+    line-height: 1;
+  }
+  .star:hover, .star.active { filter: none; transform: scale(1.15); }
+  .stars-hint {
+    text-align: center; margin-top: 10px;
+    font-size: 13px; color: var(--gold); font-weight: 500;
+    min-height: 20px;
+    transition: opacity 0.2s;
+  }
+
+  /* ── Questions ── */
+  .questions { display: flex; flex-direction: column; gap: 24px; margin-bottom: 32px; }
+  .q-block {}
+  .q-label {
+    font-size: 13px; font-weight: 600; color: var(--ink3);
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .q-label span { font-size: 16px; }
+
+  /* Rating boutons */
+  .rating-btns {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .r-btn {
+    padding: 8px 18px;
+    border: 1.5px solid #e8e4d9; border-radius: 8px;
+    background: var(--cream); color: var(--ink2);
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .r-btn:hover { border-color: var(--gold); color: var(--ink); background: #fffdf5; }
+  .r-btn.selected { border-color: var(--gold); background: var(--gold); color: var(--ink); font-weight: 700; }
+
+  textarea {
+    width: 100%; padding: 14px 16px;
+    border: 1.5px solid #e8e4d9; border-radius: 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink);
+    background: var(--cream); resize: vertical; min-height: 100px;
+    outline: none; transition: all 0.2s;
+    line-height: 1.6;
+  }
+  textarea:focus {
+    border-color: var(--gold); background: var(--white);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+  }
+  textarea::placeholder { color: #bbb; }
+
+  /* ── Bouton soumettre ── */
+  .btn-submit {
+    width: 100%; padding: 18px;
+    background: linear-gradient(135deg, var(--gold), #b8902a);
+    color: var(--ink); border: none; border-radius: 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700;
+    cursor: pointer; transition: all 0.25s;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    letter-spacing: 0.02em;
+  }
+  .btn-submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(201,168,76,0.35);
+  }
+  .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-submit.sending { animation: pulse 1.2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.65} }
+
+  /* ── Écrans de résultat ── */
+  .result-screen {
+    display: none; padding: 40px;
+    text-align: center; animation: fadeUp 0.5s ease both;
+  }
+  .result-screen.show { display: block; }
+  .result-icon { font-size: 56px; margin-bottom: 20px; }
+  .result-screen h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px; margin-bottom: 12px;
+  }
+  .result-screen p {
+    font-size: 15px; color: var(--ink3); line-height: 1.7; margin-bottom: 28px;
+  }
+
+  .btn-google {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 18px 36px;
+    background: linear-gradient(135deg, var(--green), var(--green2));
+    color: var(--white); text-decoration: none;
+    border-radius: 14px; font-size: 16px; font-weight: 700;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.25s;
+    letter-spacing: 0.02em;
+    box-shadow: 0 8px 24px rgba(45,106,79,0.25);
+  }
+  .btn-google:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(45,106,79,0.35); }
+
+  .google-note {
+    margin-top: 16px; font-size: 12px; color: #bbb; line-height: 1.5;
+  }
+
+  .negative-thanks h2 { color: var(--ink); }
+  .negative-thanks p  { color: var(--ink3); }
+
+  footer {
+    margin-top: 24px; font-size: 12px; color: var(--ink3);
+    text-align: center; position: relative; z-index:1;
+  }
+</style>
+</head>
+<body>
+
+<div class="card" id="formCard">
+  <div class="card-header">
+    <div class="header-icon">🦷</div>
+    <h1 id="cabinetTitle">Cabinet Dentaire</h1>
+    <p>Questionnaire de satisfaction patient</p>
+  </div>
+  <div class="card-body">
+
+    <p class="greeting" id="greetingText">
+      Bonjour <strong id="gPrenom"></strong>,<br>
+      Merci pour votre visite chez <strong id="gPraticien"></strong>.<br>
+      Votre avis nous aide à vous offrir les meilleurs soins.
+    </p>
+
+    <!-- Note globale étoiles -->
+    <div class="stars-section">
+      <div class="stars-label">Note générale</div>
+      <div class="stars" id="starsRow">
+        <span class="star" data-val="1">⭐</span>
+        <span class="star" data-val="2">⭐</span>
+        <span class="star" data-val="3">⭐</span>
+        <span class="star" data-val="4">⭐</span>
+        <span class="star" data-val="5">⭐</span>
+      </div>
+      <div class="stars-hint" id="starsHint"></div>
+    </div>
+
+    <div class="questions">
+
+      <!-- Q1 : Accueil -->
+      <div class="q-block">
+        <div class="q-label"><span>😊</span> Comment évaluez-vous l'accueil au cabinet ?</div>
+        <div class="rating-btns" id="q1">
+          <button class="r-btn" data-q="1" data-val="Excellent" onclick="selectRating(this)">😍 Excellent</button>
+          <button class="r-btn" data-q="1" data-val="Bien" onclick="selectRating(this)">😊 Bien</button>
+          <button class="r-btn" data-q="1" data-val="Moyen" onclick="selectRating(this)">😐 Moyen</button>
+          <button class="r-btn" data-q="1" data-val="Décevant" onclick="selectRating(this)">😕 Décevant</button>
+        </div>
+      </div>
+
+      <!-- Q2 : Soin -->
+      <div class="q-block">
+        <div class="q-label"><span>🦷</span> Êtes-vous satisfait(e) de votre soin ?</div>
+        <div class="rating-btns" id="q2">
+          <button class="r-btn" data-q="2" data-val="Très satisfait" onclick="selectRating(this)">✨ Très satisfait(e)</button>
+          <button class="r-btn" data-q="2" data-val="Satisfait" onclick="selectRating(this)">👍 Satisfait(e)</button>
+          <button class="r-btn" data-q="2" data-val="Peu satisfait" onclick="selectRating(this)">👎 Peu satisfait(e)</button>
+        </div>
+      </div>
+
+      <!-- Q3 : Commentaire libre -->
+      <div class="q-block">
+        <div class="q-label"><span>💬</span> Un commentaire à nous partager ? <span style="font-weight:300;text-transform:none;letter-spacing:0;font-size:11px;color:#bbb;">(facultatif)</span></div>
+        <textarea id="q3" placeholder="Partagez votre expérience librement..."></textarea>
+      </div>
+
+    </div>
+
+    <button class="btn-submit" id="btnSubmit" onclick="submitForm()" disabled>
+      <span>✦</span> Envoyer mon avis
+    </button>
+
+  </div>
+</div>
+
+<!-- Résultat positif (≥ 4 étoiles) -->
+<div class="card" id="resultPositif" style="display:none;">
+  <div class="result-screen show">
+    <div class="result-icon">🌟</div>
+    <h2>Merci pour votre avis !</h2>
+    <p>
+      Nous sommes ravis que votre expérience au cabinet ait été positive.<br>
+      En publiant votre avis sur Google, vous aidez d'autres patients à nous trouver.
+    </p>
+    <a href="#" id="btnGoogle" class="btn-google" target="_blank" rel="noopener">
+      <span>🔍</span> Publier sur Google Business
+    </a>
+    <p class="google-note">
+      En cliquant, vous serez redirigé(e) vers notre fiche Google.<br>
+      Vous pouvez copier-coller votre commentaire directement.
+    </p>
+  </div>
+</div>
+
+<!-- Résultat négatif (≤ 3 étoiles) -->
+<div class="card" id="resultNegatif" style="display:none;">
+  <div class="result-screen show negative-thanks">
+    <div class="result-icon">🙏</div>
+    <h2>Merci pour votre retour</h2>
+    <p>
+      Nous prenons votre avis très au sérieux.<br>
+      Notre équipe prendra contact avec vous prochainement pour comprendre comment améliorer votre expérience.
+    </p>
+    <p style="margin-top:16px;font-size:13px;color:#aaa;">
+      Votre retour a bien été transmis à l'équipe du cabinet.
+    </p>
+  </div>
+</div>
+
+<footer>Cabinet Dentaire — Questionnaire confidentiel</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// INIT — lecture des paramètres URL
+// ═══════════════════════════════════════════════════════════════
+const params = new URLSearchParams(window.location.search);
+const prenom    = params.get('prenom')    || '';
+const praticien = params.get('praticien') || 'votre praticien';
+const cabinet   = params.get('cabinet')  || 'Cabinet Dentaire';
+const googleLink= params.get('g')        || '#';
+
+document.getElementById('cabinetTitle').textContent = cabinet;
+document.getElementById('gPrenom').textContent = prenom;
+document.getElementById('gPraticien').textContent = praticien;
+document.title = `Votre avis — ${cabinet}`;
+
+// ═══════════════════════════════════════════════════════════════
+// ÉTOILES
+// ═══════════════════════════════════════════════════════════════
+let starValue = 0;
+const starHints = ['', 'Très décevant', 'Décevant', 'Correct', 'Bien', 'Excellent !'];
+
+document.querySelectorAll('.star').forEach(s => {
+  s.addEventListener('click', () => {
+    starValue = parseInt(s.dataset.val);
+    updateStars(starValue);
+    checkFormReady();
+  });
+  s.addEventListener('mouseenter', () => {
+    const v = parseInt(s.dataset.val);
+    document.querySelectorAll('.star').forEach((st, i) => {
+      st.style.filter = i < v ? 'none' : 'grayscale(1) opacity(0.3)';
+    });
+    document.getElementById('starsHint').textContent = starHints[v];
+  });
+  s.addEventListener('mouseleave', () => updateStars(starValue));
+});
+
+function updateStars(val) {
+  document.querySelectorAll('.star').forEach((st, i) => {
+    if (i < val) { st.classList.add('active'); st.style.filter = 'none'; }
+    else { st.classList.remove('active'); st.style.filter = 'grayscale(1) opacity(0.3)'; }
+  });
+  document.getElementById('starsHint').textContent = val ? starHints[val] : '';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SÉLECTION RÉPONSES
+// ═══════════════════════════════════════════════════════════════
+const answers = {};
+function selectRating(btn) {
+  const q = btn.dataset.q;
+  document.querySelectorAll(`[data-q="${q}"]`).forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  answers[q] = btn.dataset.val;
+  checkFormReady();
+}
+
+function checkFormReady() {
+  const ok = starValue > 0 && answers['1'] && answers['2'];
+  document.getElementById('btnSubmit').disabled = !ok;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SOUMISSION
+// ═══════════════════════════════════════════════════════════════
+function submitForm() {
+  const btn = document.getElementById('btnSubmit');
+  btn.disabled = true; btn.classList.add('sending');
+  btn.innerHTML = '<span>⏳</span> Envoi en cours...';
+
+  // Simulation d'envoi (dans une vraie app : POST vers un serveur ou Google Sheets)
+  setTimeout(() => {
+    document.getElementById('formCard').style.display = 'none';
+    if (starValue >= 4) {
+      document.getElementById('btnGoogle').href = googleLink;
+      document.getElementById('resultPositif').style.display = 'block';
+      // Ouvrir Google Business automatiquement après 1.5s
+      setTimeout(() => window.open(googleLink, '_blank'), 1500);
+    } else {
+      document.getElementById('resultNegatif').style.display = 'block';
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 800);
+}
+</script>
+</body>
+</html>
