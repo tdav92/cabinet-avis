@@ -624,7 +624,7 @@ function handleGmailAuth() {
   }
   const client = google.accounts.oauth2.initTokenClient({
     client_id: config.clientId,
-    scope: 'https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/userinfo.email',
+    scope: 'https://mail.google.com/ https://www.googleapis.com/auth/userinfo.email',
     callback: (resp) => {
       if (resp.error) { toast('Erreur de connexion Google : ' + resp.error, 'error'); return; }
       gmailToken = resp.access_token;
@@ -754,8 +754,7 @@ async function sendViaGmailApi(to, subject, htmlBody) {
 }
 
 function buildSurveyUrl(token, prenom, nom, email, praticien, cabinet, googleLink) {
-  // L'app questionnaire est dans le même dossier — questionnaire.html
-  const base = window.location.href.replace('app_avis.html','questionnaire.html');
+  const base = 'https://tdav92.github.io/cabinet-avis/questionnaire.html';
   const params = new URLSearchParams({ token, prenom, nom, email, praticien, cabinet, g: googleLink });
   return base + '?' + params.toString();
 }
