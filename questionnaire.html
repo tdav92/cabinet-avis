@@ -189,56 +189,45 @@ function checkReady() {
   document.getElementById('btnSubmit').disabled = !(starValue > 0 && answers['1'] && answers['2']);
 }
 
-// ── Soumission via iframe cachée (contourne no-cors) ──────────
-function submitForm() {
+// ── Soumission via GET params (contourne CORS) ───────────────
+async function submitForm() {
   const btn = document.getElementById('btnSubmit');
   btn.disabled = true; btn.classList.add('sending');
   btn.innerHTML = '<span>⏳</span> Envoi en cours...';
 
   const positif = starValue >= 4;
+  const sexe    = civ === 'Mme' ? 'Féminin' : civ === 'M.' ? 'Masculin' : '';
 
   if (scriptUrl) {
-    // Créer un formulaire caché qui envoie vers Apps Script via iframe
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = scriptUrl;
-    form.target = 'hidden_iframe'; // envoie dans l'iframe cachée, pas de rechargement
-
-    const fields = {
-      action:       'saveAvis',
-      prenom, nom, email, praticien, cabinet,
-      note:         starValue,
-      q1:           answers['1'] || '',
-      q2:           answers['2'] || '',
-      q3:           document.getElementById('q3').value.trim(),
-      positif:      positif ? 'true' : 'false',
-      googleClique: 'false'
-    };
-
-    Object.entries(fields).forEach(([k,v]) => {
-      const input = document.createElement('input');
-      input.type = 'hidden'; input.name = k; input.value = v;
-      form.appendChild(input);
-    });
-
-    document.body.appendChild(form);
-    form.submit();
-    setTimeout(() => document.body.removeChild(form), 3000);
+    try {
+      const params = new URLSearchParams({
+        action:       'saveAvis',
+        prenom, nom, civ, sexe, email, praticien, cabinet,
+        note:         starValue,
+        q1:           answers['1'] || '',
+        q2:           answers['2'] || '',
+        q3:           document.getElementById('q3').value.trim(),
+        positif:      positif ? 'true' : 'false',
+        googleClique: 'false'
+      });
+      // Envoi via image cachée — technique fiable pour contourner CORS avec Apps Script
+      const img = new Image();
+      img.src = scriptUrl + '?' + params.toString();
+    } catch(e) {}
   }
 
-  // Afficher le bon écran après 1 seconde
+  // Afficher le bon écran après 1.5 secondes (laisse le temps à l'image de charger)
   setTimeout(() => {
     document.getElementById('formCard').style.display = 'none';
     if (positif) {
       document.getElementById('btnGoogle').href = googleLink;
       document.getElementById('resultPositif').style.display = 'block';
-      // Ouvrir Google Business automatiquement après 2s
       setTimeout(() => window.open(googleLink, '_blank'), 2000);
     } else {
       document.getElementById('resultNegatif').style.display = 'block';
     }
     window.scrollTo({ top:0, behavior:'smooth' });
-  }, 1000);
+  }, 1500);
 }
 </script>
 </body>
