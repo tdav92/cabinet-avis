@@ -139,6 +139,9 @@
   .toast.i{background:#e0f0ff;color:var(--blue);border:1px solid #bdd7f7;}
   @keyframes slideIn{from{transform:translateX(16px);opacity:0}to{transform:none;opacity:1}}
 
+  .civ-btn{padding:10px 20px;border:1.5px solid #e8e4d9;border-radius:10px;background:var(--cream);color:var(--ink2);font-family:"DM Sans",sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;flex:1;}
+  .civ-btn:hover{border-color:var(--gold);background:#fffdf5;}
+  .civ-btn.selected{border-color:var(--gold);background:var(--gold);color:var(--ink);font-weight:700;}
   @media(max-width:700px){
     .stats-grid{grid-template-columns:1fr 1fr;}
     .form-grid{grid-template-columns:1fr;}
@@ -195,15 +198,22 @@
       </div>
       <div class="card-body">
         <div class="form-grid">
+          <div class="fg form-full">
+            <label>Civilité</label>
+            <div style="display:flex;gap:10px;">
+              <button type="button" class="civ-btn" id="civM" onclick="setCivility(this,'M.')">👨 Monsieur</button>
+              <button type="button" class="civ-btn" id="civMme" onclick="setCivility(this,'Mme')">👩 Madame</button>
+            </div>
+          </div>
           <div class="fg"><label>Prénom</label><input type="text" id="prenom" placeholder="Marie" oninput="updatePreview();checkReady()"></div>
-          <div class="fg"><label>Nom</label><input type="text" id="nom" placeholder="DUPONT" oninput="checkReady()"></div>
+          <div class="fg"><label>Nom</label><input type="text" id="nom" placeholder="DUPONT" oninput="updatePreview();checkReady()"></div>
           <div class="fg form-full"><label>E-mail du patient</label><input type="email" id="email" placeholder="patient@exemple.fr" oninput="checkReady()"></div>
           <div class="fg form-full"><label>Praticien</label><input type="text" id="praticien" placeholder="Dr. Martin" oninput="updatePreview()"></div>
         </div>
         <div class="preview-box">
           <div class="preview-lbl">✉ Aperçu du mail</div>
           <strong>Objet :</strong> Votre avis compte pour nous — <span id="pvCabinet">Cabinet Dentaire</span><br><br>
-          Bonjour <strong id="pvPrenom">Prénom</strong>, suite à votre visite chez <strong id="pvPraticien">Dr. ...</strong>,
+          Bonjour <strong id="pvCivNom">Prénom</strong>, suite à votre visite chez <strong id="pvPraticien">Dr. ...</strong>,
           nous aimerions connaître votre expérience. Cela prend 60 secondes.
         </div>
         <button class="btn-send" id="btnSend" onclick="sendQuestionnaire()" disabled>
@@ -277,6 +287,14 @@
 // ── Config ─────────────────────────────────────────────────────
 const CFG_KEY = 'dentalCfg';
 let cfg   = JSON.parse(localStorage.getItem(CFG_KEY) || '{}');
+let civility = '';
+
+function setCivility(btn, val) {
+  civility = val;
+  document.querySelectorAll('.civ-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  updatePreview(); checkReady();
+}
 let token = null;
 let allAvis   = [];
 let allEnvois = [];
@@ -347,12 +365,14 @@ function setConnected(email) {
 
 // ── Preview ────────────────────────────────────────────────────
 function updatePreview() {
-  document.getElementById('pvPrenom').textContent    = document.getElementById('prenom').value || 'Prénom';
+  const civ  = civility ? civility + ' ' : '';
+  const nom  = document.getElementById('nom').value || 'NOM';
+  document.getElementById('pvCivNom').textContent    = civ + nom;
   document.getElementById('pvPraticien').textContent = document.getElementById('praticien').value || 'Dr. ...';
 }
 function checkReady() {
   document.getElementById('btnSend').disabled = !(
-    token &&
+    token && civility &&
     document.getElementById('prenom').value.trim() &&
     document.getElementById('nom').value.trim() &&
     document.getElementById('email').value.includes('@')
@@ -368,16 +388,17 @@ async function sendQuestionnaire() {
   const cabinet   = cfg.cabinetName || 'Cabinet Dentaire';
   const gLink     = cfg.googleLink  || '#';
   const scriptUrl = cfg.scriptUrl   || '';
+  const civ       = civility;
 
   const surveyUrl = `https://tdav92.github.io/cabinet-avis/questionnaire.html?`
-    + new URLSearchParams({ prenom, nom, email, praticien, cabinet, g: gLink, script: scriptUrl });
+    + new URLSearchParams({ prenom, nom, email, praticien, cabinet, g: gLink, script: scriptUrl, civ });
 
   const btn = document.getElementById('btnSend');
   btn.disabled = true; btn.classList.add('sending');
   btn.innerHTML = '<span>⏳</span> Envoi en cours...';
 
   try {
-    await sendGmail(email, `Votre avis compte pour nous — ${cabinet}`, buildEmailHtml(prenom, praticien, cabinet, surveyUrl));
+    await sendGmail(email, `Votre avis compte pour nous — ${cabinet}`, buildEmailHtml(prenom, nom, civ, praticien, cabinet, surveyUrl));
 
     // Sauvegarder l'envoi dans Apps Script
     if (scriptUrl) {
@@ -385,7 +406,7 @@ async function sendQuestionnaire() {
         await fetch(scriptUrl, {
           method: 'POST', mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action:'saveEnvoi', prenom, nom, email, praticien, cabinet })
+          body: JSON.stringify({ action:'saveEnvoi', prenom, nom, email, praticien, cabinet, civ })
         });
       } catch(e) {}
     }
@@ -396,6 +417,8 @@ async function sendQuestionnaire() {
 
     toast(`Questionnaire envoyé à ${prenom} ${nom} ✓`, 's');
     ['prenom','nom','email','praticien'].forEach(id => document.getElementById(id).value = '');
+    civility = '';
+    document.querySelectorAll('.civ-btn').forEach(b => b.classList.remove('selected'));
     updatePreview();
   } catch(e) {
     toast('Erreur envoi : ' + e.message, 'e');
@@ -416,7 +439,7 @@ async function sendGmail(to, subject, htmlBody) {
   if (!r.ok) { const e=await r.json(); throw new Error(e.error?.message||'Erreur API Gmail'); }
 }
 
-function buildEmailHtml(prenom, praticien, cabinet, url) {
+function buildEmailHtml(prenom, nom, civ, praticien, cabinet, url) {
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#f4f1ea;font-family:Arial,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="padding:32px 16px;"><tr><td align="center">
@@ -427,7 +450,7 @@ function buildEmailHtml(prenom, praticien, cabinet, url) {
   <p style="margin:6px 0 0;color:rgba(255,255,255,0.4);font-size:12px;">Questionnaire de satisfaction</p>
 </td></tr>
 <tr><td style="padding:36px;">
-  <p style="margin:0 0 14px;font-size:15px;color:#0f1923;">Bonjour <strong>${prenom}</strong>,</p>
+  <p style="margin:0 0 14px;font-size:15px;color:#0f1923;">Bonjour <strong>${civ ? civ + " " + nom : prenom + " " + nom}</strong>,</p>
   <p style="margin:0 0 14px;font-size:14px;color:#3a4a5a;line-height:1.7;">Suite à votre visite chez <strong>${praticien}</strong>, nous aimerions connaître votre expérience. Cela prend moins de <strong>60 secondes</strong>.</p>
   <table cellpadding="0" cellspacing="0" width="100%"><tr><td align="center" style="padding:20px 0;">
     <a href="${url}" style="display:inline-block;padding:15px 36px;background:linear-gradient(135deg,#c9a84c,#b8902a);color:#0f1923;font-size:15px;font-weight:700;text-decoration:none;border-radius:10px;">✦ Donner mon avis</a>
@@ -483,13 +506,14 @@ function renderAvis(avis) {
   document.getElementById('avisBody').innerHTML = `
   <table class="tbl">
     <thead><tr>
-      <th>Date</th><th>Patient</th><th>Praticien</th>
+      <th>Date</th><th>Civilité</th><th>Patient</th><th>Praticien</th>
       <th>Note</th><th>Accueil</th><th>Soin</th>
       <th>Commentaire</th><th>Sentiment</th><th>Google</th>
     </tr></thead>
     <tbody>${avis.map(a=>`
       <tr>
         <td>${a.date}</td>
+        <td>${a.civ||'—'}</td>
         <td class="td-name">${a.prenom} ${a.nom}</td>
         <td>${a.praticien||'—'}</td>
         <td><span class="stars-mini">${'⭐'.repeat(Math.min(+a.note||0,5))}</span> ${a.note}/5</td>
@@ -538,12 +562,13 @@ function renderEnvois(envois) {
   document.getElementById('envoiBody').innerHTML = `
   <table class="tbl">
     <thead><tr>
-      <th>Date d'envoi</th><th>Patient</th><th>E-mail</th>
+      <th>Date d'envoi</th><th>Civilité</th><th>Patient</th><th>E-mail</th>
       <th>Praticien</th><th>Statut</th>
     </tr></thead>
     <tbody>${envois.map(e=>`
       <tr>
         <td>${e.date}</td>
+        <td>${e.civ||'—'}</td>
         <td class="td-name">${e.prenom} ${e.nom}</td>
         <td>${e.email}</td>
         <td>${e.praticien||'—'}</td>

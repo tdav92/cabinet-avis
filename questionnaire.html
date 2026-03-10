@@ -141,6 +141,7 @@
 const p          = new URLSearchParams(window.location.search);
 const prenom     = p.get('prenom')    || '';
 const nom        = p.get('nom')       || '';
+const civ        = p.get('civ')       || '';
 const email      = p.get('email')     || '';
 const praticien  = p.get('praticien') || 'votre praticien';
 const cabinet    = p.get('cabinet')   || 'Cabinet Dentaire';
@@ -148,7 +149,8 @@ const googleLink = p.get('g')         || '#';
 const scriptUrl  = p.get('script')    || '';
 
 document.getElementById('cabinetTitle').textContent = cabinet;
-document.getElementById('gPrenom').textContent      = prenom;
+const salutation = civ ? civ + ' ' + nom : prenom + ' ' + nom;
+document.getElementById('gPrenom').textContent      = salutation;
 document.getElementById('gPraticien').textContent   = praticien;
 document.getElementById('footerTxt').textContent    = cabinet + ' — Questionnaire confidentiel';
 document.title = 'Votre avis — ' + cabinet;
