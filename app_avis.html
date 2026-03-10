@@ -20,36 +20,31 @@
   body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;}
   body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 10% 20%,rgba(201,168,76,0.06) 0%,transparent 60%),radial-gradient(ellipse 60% 80% at 90% 80%,rgba(26,58,92,0.05) 0%,transparent 60%);pointer-events:none;z-index:0;}
 
-  /* HEADER */
   header{position:sticky;top:0;z-index:100;background:rgba(15,25,35,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,168,76,0.2);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px;}
   .logo{display:flex;align-items:center;gap:12px;}
   .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;}
   .logo-text{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:var(--white);}
   .logo-sub{font-size:11px;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;font-weight:300;}
-  .header-right{display:flex;align-items:center;gap:12px;}
+  .header-right{display:flex;align-items:center;gap:10px;}
   .status-badge{display:flex;align-items:center;gap:7px;font-size:12px;color:#aaa;}
   .dot{width:7px;height:7px;border-radius:50%;background:#555;transition:all 0.3s;}
   .dot.on{background:#4ade80;box-shadow:0 0 6px #4ade80;}
-  .btn-sm{padding:8px 16px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;}
+  .btn-sm{padding:8px 14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;}
   .btn-dark{background:rgba(255,255,255,0.1);color:var(--white);}
   .btn-dark:hover{background:rgba(255,255,255,0.18);}
-  .btn-gold{background:linear-gradient(135deg,var(--gold),#b8902a);color:var(--ink);}
-  .btn-gold:hover{opacity:0.9;}
 
-  /* NAV TABS */
   .tabs{position:relative;z-index:1;display:flex;gap:4px;padding:24px 40px 0;max-width:1100px;margin:0 auto;}
-  .tab{padding:10px 24px;border-radius:10px 10px 0 0;font-size:14px;font-weight:500;cursor:pointer;color:var(--ink3);background:transparent;border:none;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
+  .tab{padding:10px 22px;border-radius:10px 10px 0 0;font-size:14px;font-weight:500;cursor:pointer;color:var(--ink3);background:transparent;border:none;transition:all 0.2s;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:7px;}
   .tab.active{background:var(--white);color:var(--ink);font-weight:600;box-shadow:0 -2px 8px rgba(0,0,0,0.06);}
   .tab:hover:not(.active){color:var(--ink2);}
+  .tab-badge{background:var(--gold);color:var(--ink);font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;min-width:18px;text-align:center;}
 
-  /* MAIN */
   .main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 40px 80px;}
   .panel{display:none;padding-top:28px;}
   .panel.active{display:block;}
 
-  /* CARDS */
   .card{background:var(--white);border:1px solid rgba(201,168,76,0.15);border-radius:16px;box-shadow:var(--shadow2);overflow:hidden;margin-bottom:24px;}
-  .card-head{padding:20px 28px;border-bottom:1px solid #f0ece1;display:flex;align-items:center;justify-content:space-between;}
+  .card-head{padding:20px 28px;border-bottom:1px solid #f0ece1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
   .card-head h3{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--ink);}
   .card-body{padding:28px;}
 
@@ -59,7 +54,7 @@
   .stat-val{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--ink);line-height:1;}
   .stat-val.gold{color:var(--gold);}
   .stat-val.green{color:var(--green);}
-  .stat-val.red{color:var(--red);}
+  .stat-val.blue{color:var(--blue);}
   .stat-label{font-size:12px;color:var(--ink3);margin-top:6px;font-weight:500;}
 
   /* FORM */
@@ -78,46 +73,48 @@
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.65}}
   .btn-send.sending{animation:pulse 1.2s infinite;}
 
-  /* GMAIL CARD */
-  .gmail-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 28px;background:var(--white);border:1px solid rgba(201,168,76,0.15);border-radius:14px;box-shadow:var(--shadow2);margin-bottom:20px;}
-  .gmail-left{display:flex;align-items:center;gap:14px;}
-  .gmail-ico{width:40px;height:40px;border-radius:9px;background:#f8f8f8;border:1px solid #eee;display:flex;align-items:center;justify-content:center;font-size:20px;}
+  /* GMAIL */
+  .gmail-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 24px;background:var(--white);border:1px solid rgba(201,168,76,0.15);border-radius:14px;box-shadow:var(--shadow2);margin-bottom:20px;flex-wrap:wrap;}
+  .gmail-left{display:flex;align-items:center;gap:12px;}
+  .gmail-ico{width:38px;height:38px;border-radius:9px;background:#f8f8f8;border:1px solid #eee;display:flex;align-items:center;justify-content:center;font-size:19px;}
   .gmail-texts h4{font-size:14px;font-weight:600;color:var(--ink);}
   .gmail-texts p{font-size:12px;color:var(--ink3);margin-top:2px;}
-  .gmail-texts .ok{color:var(--green);font-weight:500;}
-  .btn-connect{padding:10px 20px;background:var(--ink);color:var(--white);border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+  .gmail-texts .ok{color:var(--green);font-weight:500;font-size:12px;}
+  .btn-connect{padding:10px 18px;background:var(--ink);color:var(--white);border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;}
   .btn-connect:hover{background:var(--blue);}
   .btn-connect.on{background:#16a34a;}
 
-  /* AVIS TABLE */
-  .avis-table{width:100%;border-collapse:collapse;}
-  .avis-table thead th{padding:10px 16px;text-align:left;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.08em;background:var(--surface);border-bottom:1px solid #e8e4d9;}
-  .avis-table tbody tr{border-bottom:1px solid #f4f0e6;transition:background 0.15s;}
-  .avis-table tbody tr:last-child{border:none;}
-  .avis-table tbody tr:hover{background:var(--surface);}
-  .avis-table td{padding:12px 16px;font-size:13px;color:var(--ink2);}
+  /* TABLES */
+  .tbl{width:100%;border-collapse:collapse;}
+  .tbl thead th{padding:10px 16px;text-align:left;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.08em;background:var(--surface);border-bottom:1px solid #e8e4d9;}
+  .tbl tbody tr{border-bottom:1px solid #f4f0e6;transition:background 0.15s;}
+  .tbl tbody tr:last-child{border:none;}
+  .tbl tbody tr:hover{background:var(--surface);}
+  .tbl td{padding:12px 16px;font-size:13px;color:var(--ink2);}
   .td-name{font-weight:600;color:var(--ink);}
-  .stars-mini{color:#f59e0b;font-size:13px;letter-spacing:-1px;}
-  .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+  .stars-mini{color:#f59e0b;font-size:12px;}
+  .pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
   .pill.pos{background:var(--green-l);color:var(--green);}
   .pill.neg{background:var(--red-l);color:var(--red);}
-  .pill.google-yes{background:#e0f0ff;color:var(--blue);}
-  .pill.google-no{background:#f0f0f0;color:#888;}
+  .pill.gyes{background:#e0f0ff;color:var(--blue);}
+  .pill.gno{background:#f0f0f0;color:#888;}
+  .pill.sent{background:#fef3c7;color:#92400e;}
   .empty{padding:40px;text-align:center;color:var(--ink3);font-size:14px;}
   .empty-ico{font-size:28px;margin-bottom:10px;opacity:0.35;}
 
-  /* REFRESH */
-  .refresh-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-  .refresh-bar span{font-size:12px;color:var(--ink3);}
-  .btn-refresh{padding:7px 14px;background:var(--surface);border:1px solid #e8e4d9;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--ink2);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
-  .btn-refresh:hover{border-color:#ccc;background:#eee;}
+  /* SEARCH BAR */
+  .search-bar{display:flex;align-items:center;gap:10px;}
+  .search-bar input{padding:8px 14px;border:1.5px solid #e8e4d9;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--cream);outline:none;width:220px;transition:all 0.2s;}
+  .search-bar input:focus{border-color:var(--gold);background:var(--white);}
+  .btn-refresh{padding:8px 14px;background:var(--surface);border:1px solid #e8e4d9;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--ink2);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
+  .btn-refresh:hover{border-color:#ccc;}
   .spinning{animation:spin 1s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg)}}
 
-  /* CONFIG MODAL */
+  /* MODAL */
   .overlay{position:fixed;inset:0;background:rgba(15,25,35,0.75);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.25s;}
   .overlay.open{opacity:1;pointer-events:auto;}
-  .modal{background:var(--white);border-radius:20px;padding:36px;max-width:540px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.2);transform:translateY(16px);transition:transform 0.25s;}
+  .modal{background:var(--white);border-radius:20px;padding:36px;max-width:540px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.2);transform:translateY(16px);transition:transform 0.25s;max-height:90vh;overflow-y:auto;}
   .overlay.open .modal{transform:none;}
   .modal h2{font-family:'Playfair Display',serif;font-size:20px;margin-bottom:4px;}
   .modal p{font-size:13px;color:var(--ink3);margin-bottom:20px;}
@@ -132,7 +129,7 @@
   .step-list{list-style:none;margin-bottom:20px;}
   .step-list li{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f0ece1;font-size:12px;color:var(--ink2);line-height:1.5;}
   .step-list li:last-child{border:none;}
-  .sn{min-width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--white);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .sn{min-width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--white);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;flex-shrink:0;}
 
   /* TOAST */
   .toasts{position:fixed;top:76px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px;}
@@ -147,6 +144,7 @@
     .form-grid{grid-template-columns:1fr;}
     .tabs,.main{padding-left:16px;padding-right:16px;}
     header{padding:0 16px;}
+    .tab span.tab-label{display:none;}
   }
 </style>
 </head>
@@ -169,15 +167,15 @@
 <div class="toasts" id="toasts"></div>
 
 <div class="tabs">
-  <button class="tab active" onclick="switchTab('envoyer',this)">📨 Envoyer</button>
-  <button class="tab" onclick="switchTab('avis',this)">⭐ Tableau de bord</button>
+  <button class="tab active" onclick="switchTab('envoyer',this)">📨 <span class="tab-label">Envoyer</span></button>
+  <button class="tab" onclick="switchTab('avis',this)">⭐ <span class="tab-label">Tableau de bord</span></button>
+  <button class="tab" onclick="switchTab('listing',this)">📋 <span class="tab-label">Demandes envoyées</span> <span class="tab-badge" id="badgeEnvois">0</span></button>
 </div>
 
 <div class="main">
 
-  <!-- ═══ PANEL ENVOYER ═══ -->
+  <!-- ══ PANEL ENVOYER ══ -->
   <div class="panel active" id="panel-envoyer">
-
     <div class="gmail-row">
       <div class="gmail-left">
         <div class="gmail-ico">📧</div>
@@ -193,7 +191,7 @@
     <div class="card">
       <div class="card-head">
         <h3>Nouveau questionnaire</h3>
-        <span style="font-size:12px;color:var(--ink3);">Le mail est envoyé immédiatement</span>
+        <span style="font-size:12px;color:var(--ink3);">Mail envoyé immédiatement</span>
       </div>
       <div class="card-body">
         <div class="form-grid">
@@ -205,38 +203,48 @@
         <div class="preview-box">
           <div class="preview-lbl">✉ Aperçu du mail</div>
           <strong>Objet :</strong> Votre avis compte pour nous — <span id="pvCabinet">Cabinet Dentaire</span><br><br>
-          Bonjour <strong id="pvPrenom">Prénom</strong>, suite à votre visite chez <strong id="pvPraticien">Dr. ...</strong>, nous aimerions connaître votre expérience. Cela prend 60 secondes.
+          Bonjour <strong id="pvPrenom">Prénom</strong>, suite à votre visite chez <strong id="pvPraticien">Dr. ...</strong>,
+          nous aimerions connaître votre expérience. Cela prend 60 secondes.
         </div>
         <button class="btn-send" id="btnSend" onclick="sendQuestionnaire()" disabled>
           <span>📨</span> Envoyer le questionnaire
         </button>
       </div>
     </div>
-
   </div>
 
-  <!-- ═══ PANEL TABLEAU DE BORD ═══ -->
+  <!-- ══ PANEL TABLEAU DE BORD ══ -->
   <div class="panel" id="panel-avis">
-
-    <div class="stats-grid" id="statsGrid">
+    <div class="stats-grid">
       <div class="stat-card"><div class="stat-val" id="sTotal">—</div><div class="stat-label">Avis reçus</div></div>
       <div class="stat-card"><div class="stat-val gold" id="sMoyenne">—</div><div class="stat-label">Note moyenne /5</div></div>
-      <div class="stat-card"><div class="stat-val green" id="sPositifs">—</div><div class="stat-label">Avis positifs ≥4★</div></div>
-      <div class="stat-card"><div class="stat-val" id="sGoogle" style="color:var(--blue)">—</div><div class="stat-label">Clics Google Business</div></div>
+      <div class="stat-card"><div class="stat-val green" id="sPositifs">—</div><div class="stat-label">Avis positifs ≥ 4★</div></div>
+      <div class="stat-card"><div class="stat-val blue" id="sGoogle">—</div><div class="stat-label">Clics Google Business</div></div>
     </div>
-
     <div class="card">
       <div class="card-head">
         <h3>Réponses des patients</h3>
-        <div class="refresh-bar" style="margin:0;">
-          <button class="btn-refresh" onclick="loadAvis()"><span id="refreshIcon">↻</span> Actualiser</button>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div class="search-bar"><input type="text" id="searchAvis" placeholder="🔍 Rechercher..." oninput="filterAvis()"></div>
+          <button class="btn-refresh" onclick="loadAvis()"><span id="r1">↻</span> Actualiser</button>
         </div>
       </div>
-      <div id="avisBody">
-        <div class="empty"><div class="empty-ico">📭</div>Chargez les avis en cliquant sur Actualiser</div>
-      </div>
+      <div id="avisBody"><div class="empty"><div class="empty-ico">📭</div>Cliquez sur Actualiser pour charger les avis</div></div>
     </div>
+  </div>
 
+  <!-- ══ PANEL LISTING ENVOIS ══ -->
+  <div class="panel" id="panel-listing">
+    <div class="card">
+      <div class="card-head">
+        <h3>Toutes les demandes envoyées</h3>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div class="search-bar"><input type="text" id="searchEnvois" placeholder="🔍 Rechercher..." oninput="filterEnvois()"></div>
+          <button class="btn-refresh" onclick="loadEnvois()"><span id="r2">↻</span> Actualiser</button>
+        </div>
+      </div>
+      <div id="envoiBody"><div class="empty"><div class="empty-ico">📋</div>Cliquez sur Actualiser pour charger la liste</div></div>
+    </div>
   </div>
 
 </div>
@@ -245,14 +253,14 @@
 <div class="overlay" id="overlay" onclick="closeOutside(event)">
   <div class="modal">
     <h2>⚙ Configuration</h2>
-    <p>Paramètres de l'application — à remplir une seule fois</p>
+    <p>À remplir une seule fois sur cet ordinateur</p>
     <ul class="step-list">
-      <li><span class="sn">1</span><span><strong>console.cloud.google.com</strong> → Identifiants → votre OAuth 2.0 → copiez le <strong>Client ID</strong></span></li>
-      <li><span class="sn">2</span><span><strong>script.google.com</strong> → Nouveau projet → collez le code <code>apps_script.js</code> → Déployer → Application Web → Accès : Tout le monde → copiez l'URL de déploiement</span></li>
-      <li><span class="sn">3</span><span>Votre fiche Google Business → Obtenir le lien pour les avis → copiez l'URL</span></li>
+      <li><span class="sn">1</span><span><strong>console.cloud.google.com</strong> → Identifiants → Client ID OAuth 2.0</span></li>
+      <li><span class="sn">2</span><span><strong>script.google.com</strong> → Nouveau projet → collez le code → Déployer → Application Web → Tout le monde → URL /exec</span></li>
+      <li><span class="sn">3</span><span>Google Business → Obtenir le lien pour les avis</span></li>
     </ul>
     <div class="mfg"><label>Client ID Google OAuth 2.0</label><input id="cfgId" placeholder="xxxxxxxxx.apps.googleusercontent.com"></div>
-    <div class="mfg"><label>URL Google Apps Script (déploiement)</label><input id="cfgScript" placeholder="https://script.google.com/macros/s/xxx/exec"></div>
+    <div class="mfg"><label>URL Google Apps Script</label><input id="cfgScript" placeholder="https://script.google.com/macros/s/xxx/exec"></div>
     <div class="mfg"><label>Lien Google Business (avis)</label><input id="cfgGoogle" placeholder="https://g.page/r/xxx/review"></div>
     <div class="mfg"><label>Nom du cabinet</label><input id="cfgName" placeholder="Cabinet Dentaire Dr. Martin" value="Cabinet Dentaire"></div>
     <div class="modal-btns">
@@ -262,13 +270,16 @@
   </div>
 </div>
 
+<!-- Iframe cachée pour envoi questionnaire sans rechargement -->
+<iframe name="hidden_iframe" style="display:none;"></iframe>
+
 <script>
-// ── Config ────────────────────────────────────────────────────
+// ── Config ─────────────────────────────────────────────────────
 const CFG_KEY = 'dentalCfg';
-const HIST_KEY= 'dentalHist';
-let cfg   = JSON.parse(localStorage.getItem(CFG_KEY)  || '{}');
-let hist  = JSON.parse(localStorage.getItem(HIST_KEY) || '[]');
+let cfg   = JSON.parse(localStorage.getItem(CFG_KEY) || '{}');
 let token = null;
+let allAvis   = [];
+let allEnvois = [];
 
 window.onload = () => {
   restoreCfg();
@@ -280,8 +291,8 @@ function restoreCfg() {
   if (cfg.clientId)    document.getElementById('cfgId').value     = cfg.clientId;
   if (cfg.scriptUrl)   document.getElementById('cfgScript').value = cfg.scriptUrl;
   if (cfg.googleLink)  document.getElementById('cfgGoogle').value = cfg.googleLink;
-  if (cfg.cabinetName) {
-    document.getElementById('cfgName').value = cfg.cabinetName;
+  if (cfg.cabinetName){
+    document.getElementById('cfgName').value    = cfg.cabinetName;
     document.getElementById('pvCabinet').textContent = cfg.cabinetName;
   }
 }
@@ -298,18 +309,17 @@ function saveConfig() {
   if (cfg.clientId) loadGsi();
 }
 
-// ── Google Auth ───────────────────────────────────────────────
+// ── Google Auth ────────────────────────────────────────────────
 function loadGsi() {
   if (document.getElementById('gsiScript')) return;
   const s = document.createElement('script');
-  s.id  = 'gsiScript';
-  s.src = 'https://accounts.google.com/gsi/client';
+  s.id = 'gsiScript'; s.src = 'https://accounts.google.com/gsi/client';
   document.head.appendChild(s);
 }
 
 function handleAuth() {
   if (!cfg.clientId) { toast('Configurez d\'abord le Client ID','e'); openModal(); return; }
-  const client = google.accounts.oauth2.initTokenClient({
+  google.accounts.oauth2.initTokenClient({
     client_id: cfg.clientId,
     scope: 'https://mail.google.com/ https://www.googleapis.com/auth/userinfo.email',
     callback: async (r) => {
@@ -320,14 +330,13 @@ function handleAuth() {
         setConnected(d.email || 'Gmail connecté');
       } catch { setConnected('Gmail connecté'); }
     }
-  });
-  client.requestAccessToken();
+  }).requestAccessToken();
 }
 
 function setConnected(email) {
   document.getElementById('dot').classList.add('on');
   document.getElementById('statusTxt').textContent = email;
-  document.getElementById('btnGmail').textContent = '✓ Connecté';
+  document.getElementById('btnGmail').textContent  = '✓ Connecté';
   document.getElementById('btnGmail').classList.add('on');
   document.getElementById('gmailDesc').style.display = 'none';
   document.getElementById('gmailOk').style.display   = 'block';
@@ -336,21 +345,21 @@ function setConnected(email) {
   toast('Gmail connecté !','s');
 }
 
-// ── Preview & validation ──────────────────────────────────────
+// ── Preview ────────────────────────────────────────────────────
 function updatePreview() {
   document.getElementById('pvPrenom').textContent    = document.getElementById('prenom').value || 'Prénom';
   document.getElementById('pvPraticien').textContent = document.getElementById('praticien').value || 'Dr. ...';
 }
-
 function checkReady() {
-  const ok = token
-    && document.getElementById('prenom').value.trim()
-    && document.getElementById('nom').value.trim()
-    && document.getElementById('email').value.includes('@');
-  document.getElementById('btnSend').disabled = !ok;
+  document.getElementById('btnSend').disabled = !(
+    token &&
+    document.getElementById('prenom').value.trim() &&
+    document.getElementById('nom').value.trim() &&
+    document.getElementById('email').value.includes('@')
+  );
 }
 
-// ── Envoi ─────────────────────────────────────────────────────
+// ── Envoi questionnaire ────────────────────────────────────────
 async function sendQuestionnaire() {
   const prenom    = document.getElementById('prenom').value.trim();
   const nom       = document.getElementById('nom').value.trim().toUpperCase();
@@ -363,19 +372,30 @@ async function sendQuestionnaire() {
   const surveyUrl = `https://tdav92.github.io/cabinet-avis/questionnaire.html?`
     + new URLSearchParams({ prenom, nom, email, praticien, cabinet, g: gLink, script: scriptUrl });
 
-  const subject = `Votre avis compte pour nous — ${cabinet}`;
-  const html    = buildEmailHtml(prenom, praticien, cabinet, surveyUrl);
-
   const btn = document.getElementById('btnSend');
   btn.disabled = true; btn.classList.add('sending');
   btn.innerHTML = '<span>⏳</span> Envoi en cours...';
 
   try {
-    await sendGmail(email, subject, html);
-    hist.unshift({ prenom, nom, email, praticien, date: new Date().toLocaleDateString('fr-FR'), statut:'Envoyé' });
-    localStorage.setItem(HIST_KEY, JSON.stringify(hist));
+    await sendGmail(email, `Votre avis compte pour nous — ${cabinet}`, buildEmailHtml(prenom, praticien, cabinet, surveyUrl));
+
+    // Sauvegarder l'envoi dans Apps Script
+    if (scriptUrl) {
+      try {
+        await fetch(scriptUrl, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action:'saveEnvoi', prenom, nom, email, praticien, cabinet })
+        });
+      } catch(e) {}
+    }
+
+    // Mettre à jour le badge
+    allEnvois.unshift({ date: new Date().toLocaleDateString('fr-FR'), prenom, nom, email, praticien, statut:'Envoyé' });
+    document.getElementById('badgeEnvois').textContent = allEnvois.length;
+
     toast(`Questionnaire envoyé à ${prenom} ${nom} ✓`, 's');
-    ['prenom','nom','email','praticien'].forEach(id => document.getElementById(id).value='');
+    ['prenom','nom','email','praticien'].forEach(id => document.getElementById(id).value = '');
     updatePreview();
   } catch(e) {
     toast('Erreur envoi : ' + e.message, 'e');
@@ -387,14 +407,10 @@ async function sendQuestionnaire() {
 }
 
 async function sendGmail(to, subject, htmlBody) {
-  const raw = btoa(unescape(encodeURIComponent(
-    `To: ${to}\r\nSubject: =?utf-8?B?${btoa(unescape(encodeURIComponent(subject)))}?=\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=utf-8\r\nContent-Transfer-Encoding: base64\r\n\r\n`
-    + btoa(unescape(encodeURIComponent(htmlBody)))
-  ))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-
+  const msg = `To: ${to}\r\nSubject: =?utf-8?B?${btoa(unescape(encodeURIComponent(subject)))}?=\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=utf-8\r\nContent-Transfer-Encoding: base64\r\n\r\n${btoa(unescape(encodeURIComponent(htmlBody)))}`;
+  const raw = btoa(unescape(encodeURIComponent(msg))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
   const r = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send',{
-    method:'POST',
-    headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+    method:'POST', headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
     body: JSON.stringify({ raw })
   });
   if (!r.ok) { const e=await r.json(); throw new Error(e.error?.message||'Erreur API Gmail'); }
@@ -403,8 +419,7 @@ async function sendGmail(to, subject, htmlBody) {
 function buildEmailHtml(prenom, praticien, cabinet, url) {
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#f4f1ea;font-family:Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="padding:32px 16px;">
-<tr><td align="center">
+<table width="100%" cellpadding="0" cellspacing="0" style="padding:32px 16px;"><tr><td align="center">
 <table width="560" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
 <tr><td style="background:linear-gradient(135deg,#0f1923,#1a3a5c);padding:32px 36px;text-align:center;">
   <div style="font-size:30px;margin-bottom:10px;">🦷</div>
@@ -417,37 +432,43 @@ function buildEmailHtml(prenom, praticien, cabinet, url) {
   <table cellpadding="0" cellspacing="0" width="100%"><tr><td align="center" style="padding:20px 0;">
     <a href="${url}" style="display:inline-block;padding:15px 36px;background:linear-gradient(135deg,#c9a84c,#b8902a);color:#0f1923;font-size:15px;font-weight:700;text-decoration:none;border-radius:10px;">✦ Donner mon avis</a>
   </td></tr></table>
-  <p style="margin:0;font-size:11px;color:#bbb;text-align:center;">Si le bouton ne fonctionne pas : <a href="${url}" style="color:#c9a84c;">${url.substring(0,60)}...</a></p>
+  <p style="margin:0;font-size:11px;color:#bbb;text-align:center;">Si le bouton ne fonctionne pas : <a href="${url}" style="color:#c9a84c;">${url.substring(0,70)}...</a></p>
 </td></tr>
-<tr><td style="padding:18px 36px;background:#f4f1ea;border-top:1px solid #e8e4d9;text-align:center;">
+<tr><td style="padding:16px 36px;background:#f4f1ea;border-top:1px solid #e8e4d9;text-align:center;">
   <p style="margin:0;font-size:11px;color:#aaa;">${cabinet} — Merci pour votre confiance</p>
 </td></tr>
 </table></td></tr></table></body></html>`;
 }
 
-// ── Tableau de bord avis ──────────────────────────────────────
+// ── Tableau de bord avis ───────────────────────────────────────
 async function loadAvis() {
-  if (!cfg.scriptUrl) { toast('Configurez l\'URL Google Apps Script','e'); return; }
-  const ico = document.getElementById('refreshIcon');
+  if (!cfg.scriptUrl) { toast('Configurez l\'URL Apps Script','e'); return; }
+  const ico = document.getElementById('r1');
   ico.classList.add('spinning');
-
   try {
-    const r = await fetch(cfg.scriptUrl + '?t=' + Date.now());
+    const r = await fetch(cfg.scriptUrl + '?type=avis&t=' + Date.now());
     const d = await r.json();
     if (!d.success) throw new Error(d.error || 'Erreur');
-    renderAvis(d.avis || []);
-    toast('Avis mis à jour ✓','s');
+    allAvis = d.avis || [];
+    renderAvis(allAvis);
+    toast(`${allAvis.length} avis chargés ✓`, 's');
   } catch(e) {
-    toast('Impossible de charger les avis : ' + e.message, 'e');
+    toast('Erreur chargement avis : ' + e.message, 'e');
   } finally {
     ico.classList.remove('spinning');
   }
 }
 
+function filterAvis() {
+  const q = document.getElementById('searchAvis').value.toLowerCase();
+  renderAvis(allAvis.filter(a =>
+    (a.prenom+a.nom+a.email+a.praticien+a.q3).toLowerCase().includes(q)
+  ));
+}
+
 function renderAvis(avis) {
-  // Stats
   const total    = avis.length;
-  const positifs = avis.filter(a => a.note >= 4).length;
+  const positifs = avis.filter(a => +a.note >= 4).length;
   const moyenne  = total ? (avis.reduce((s,a)=>s+(+a.note||0),0)/total).toFixed(1) : '—';
   const gClics   = avis.filter(a => a.googleClique === 'Oui').length;
   document.getElementById('sTotal').textContent    = total;
@@ -459,16 +480,14 @@ function renderAvis(avis) {
     document.getElementById('avisBody').innerHTML = '<div class="empty"><div class="empty-ico">📭</div>Aucun avis reçu pour le moment</div>';
     return;
   }
-
   document.getElementById('avisBody').innerHTML = `
-  <table class="avis-table">
+  <table class="tbl">
     <thead><tr>
       <th>Date</th><th>Patient</th><th>Praticien</th>
       <th>Note</th><th>Accueil</th><th>Soin</th>
       <th>Commentaire</th><th>Sentiment</th><th>Google</th>
     </tr></thead>
-    <tbody>
-    ${avis.map(a => `
+    <tbody>${avis.map(a=>`
       <tr>
         <td>${a.date}</td>
         <td class="td-name">${a.prenom} ${a.nom}</td>
@@ -476,29 +495,80 @@ function renderAvis(avis) {
         <td><span class="stars-mini">${'⭐'.repeat(Math.min(+a.note||0,5))}</span> ${a.note}/5</td>
         <td>${a.q1||'—'}</td>
         <td>${a.q2||'—'}</td>
-        <td style="max-width:180px;font-size:12px;">${a.q3||'<span style="color:#ccc">—</span>'}</td>
+        <td style="max-width:160px;font-size:12px;">${a.q3||'<span style="color:#ccc">—</span>'}</td>
         <td><span class="pill ${a.sentiment==='Positif'?'pos':'neg'}">${a.sentiment==='Positif'?'😊':'😞'} ${a.sentiment}</span></td>
-        <td><span class="pill ${a.googleClique==='Oui'?'google-yes':'google-no'}">${a.googleClique==='Oui'?'✓ Oui':'✕ Non'}</span></td>
+        <td><span class="pill ${a.googleClique==='Oui'?'gyes':'gno'}">${a.googleClique==='Oui'?'✓ Oui':'✕ Non'}</span></td>
       </tr>`).join('')}
     </tbody>
   </table>`;
 }
 
-// ── Tabs ──────────────────────────────────────────────────────
+// ── Listing envois ─────────────────────────────────────────────
+async function loadEnvois() {
+  if (!cfg.scriptUrl) { toast('Configurez l\'URL Apps Script','e'); return; }
+  const ico = document.getElementById('r2');
+  ico.classList.add('spinning');
+  try {
+    const r = await fetch(cfg.scriptUrl + '?type=envois&t=' + Date.now());
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || 'Erreur');
+    allEnvois = d.envois || [];
+    document.getElementById('badgeEnvois').textContent = allEnvois.length;
+    renderEnvois(allEnvois);
+    toast(`${allEnvois.length} demandes chargées ✓`, 's');
+  } catch(e) {
+    toast('Erreur chargement envois : ' + e.message, 'e');
+  } finally {
+    ico.classList.remove('spinning');
+  }
+}
+
+function filterEnvois() {
+  const q = document.getElementById('searchEnvois').value.toLowerCase();
+  renderEnvois(allEnvois.filter(e =>
+    (e.prenom+e.nom+e.email+e.praticien).toLowerCase().includes(q)
+  ));
+}
+
+function renderEnvois(envois) {
+  if (!envois.length) {
+    document.getElementById('envoiBody').innerHTML = '<div class="empty"><div class="empty-ico">📋</div>Aucune demande envoyée pour le moment</div>';
+    return;
+  }
+  document.getElementById('envoiBody').innerHTML = `
+  <table class="tbl">
+    <thead><tr>
+      <th>Date d'envoi</th><th>Patient</th><th>E-mail</th>
+      <th>Praticien</th><th>Statut</th>
+    </tr></thead>
+    <tbody>${envois.map(e=>`
+      <tr>
+        <td>${e.date}</td>
+        <td class="td-name">${e.prenom} ${e.nom}</td>
+        <td>${e.email}</td>
+        <td>${e.praticien||'—'}</td>
+        <td><span class="pill sent">✉ ${e.statut}</span></td>
+      </tr>`).join('')}
+    </tbody>
+  </table>`;
+}
+
+// ── Tabs ───────────────────────────────────────────────────────
 function switchTab(id, btn) {
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('panel-'+id).classList.add('active');
-  if (id==='avis' && cfg.scriptUrl) loadAvis();
+  if (id==='avis'    && cfg.scriptUrl) loadAvis();
+  if (id==='listing' && cfg.scriptUrl) loadEnvois();
 }
 
-// ── Modal ─────────────────────────────────────────────────────
+// ── Modal ──────────────────────────────────────────────────────
 function openModal()  { document.getElementById('overlay').classList.add('open'); }
 function closeModal() { document.getElementById('overlay').classList.remove('open'); }
 function closeOutside(e) { if(e.target===document.getElementById('overlay')) closeModal(); }
 
-// ── Toast ─────────────────────────────────────────────────────
+// ── Toast ──────────────────────────────────────────────────────
 function toast(msg, type='i') {
   const c = document.getElementById('toasts');
   const t = document.createElement('div');

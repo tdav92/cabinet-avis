@@ -85,18 +85,18 @@
       <div class="q-block">
         <div class="q-label"><span>😊</span> Comment évaluez-vous l'accueil au cabinet ?</div>
         <div class="rating-btns">
-          <button class="r-btn" data-q="1" data-val="Excellent" onclick="selectRating(this)">😍 Excellent</button>
-          <button class="r-btn" data-q="1" data-val="Bien" onclick="selectRating(this)">😊 Bien</button>
-          <button class="r-btn" data-q="1" data-val="Moyen" onclick="selectRating(this)">😐 Moyen</button>
-          <button class="r-btn" data-q="1" data-val="Décevant" onclick="selectRating(this)">😕 Décevant</button>
+          <button class="r-btn" data-q="1" data-val="Excellent"  onclick="selectRating(this)">😍 Excellent</button>
+          <button class="r-btn" data-q="1" data-val="Bien"       onclick="selectRating(this)">😊 Bien</button>
+          <button class="r-btn" data-q="1" data-val="Moyen"      onclick="selectRating(this)">😐 Moyen</button>
+          <button class="r-btn" data-q="1" data-val="Décevant"   onclick="selectRating(this)">😕 Décevant</button>
         </div>
       </div>
       <div class="q-block">
         <div class="q-label"><span>🦷</span> Êtes-vous satisfait(e) de votre soin ?</div>
         <div class="rating-btns">
           <button class="r-btn" data-q="2" data-val="Très satisfait" onclick="selectRating(this)">✨ Très satisfait(e)</button>
-          <button class="r-btn" data-q="2" data-val="Satisfait" onclick="selectRating(this)">👍 Satisfait(e)</button>
-          <button class="r-btn" data-q="2" data-val="Peu satisfait" onclick="selectRating(this)">👎 Peu satisfait(e)</button>
+          <button class="r-btn" data-q="2" data-val="Satisfait"       onclick="selectRating(this)">👍 Satisfait(e)</button>
+          <button class="r-btn" data-q="2" data-val="Peu satisfait"   onclick="selectRating(this)">👎 Peu satisfait(e)</button>
         </div>
       </div>
       <div class="q-block">
@@ -110,6 +110,7 @@
   </div>
 </div>
 
+<!-- Résultat positif -->
 <div class="card" id="resultPositif" style="display:none;">
   <div class="result-screen show">
     <div class="result-icon">🌟</div>
@@ -122,6 +123,7 @@
   </div>
 </div>
 
+<!-- Résultat négatif -->
 <div class="card" id="resultNegatif" style="display:none;">
   <div class="result-screen show">
     <div class="result-icon">🙏</div>
@@ -132,15 +134,18 @@
 
 <footer id="footerTxt">Cabinet Dentaire — Questionnaire confidentiel</footer>
 
+<!-- Iframe cachée pour l'envoi sans rechargement de page -->
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+
 <script>
-const p         = new URLSearchParams(window.location.search);
-const prenom    = p.get('prenom')    || '';
-const nom       = p.get('nom')       || '';
-const email     = p.get('email')     || '';
-const praticien = p.get('praticien') || 'votre praticien';
-const cabinet   = p.get('cabinet')   || 'Cabinet Dentaire';
-const googleLink= p.get('g')         || '#';
-const scriptUrl = p.get('script')    || '';
+const p          = new URLSearchParams(window.location.search);
+const prenom     = p.get('prenom')    || '';
+const nom        = p.get('nom')       || '';
+const email      = p.get('email')     || '';
+const praticien  = p.get('praticien') || 'votre praticien';
+const cabinet    = p.get('cabinet')   || 'Cabinet Dentaire';
+const googleLink = p.get('g')         || '#';
+const scriptUrl  = p.get('script')    || '';
 
 document.getElementById('cabinetTitle').textContent = cabinet;
 document.getElementById('gPrenom').textContent      = prenom;
@@ -148,6 +153,7 @@ document.getElementById('gPraticien').textContent   = praticien;
 document.getElementById('footerTxt').textContent    = cabinet + ' — Questionnaire confidentiel';
 document.title = 'Votre avis — ' + cabinet;
 
+// ── Étoiles ───────────────────────────────────────────────────
 let starValue = 0;
 const hints = ['','Très décevant','Décevant','Correct','Bien','Excellent !'];
 
@@ -164,11 +170,12 @@ document.querySelectorAll('.star').forEach(s => {
 function updateStars(val) {
   document.querySelectorAll('.star').forEach((st,i) => {
     st.classList.toggle('active', i<val);
-    st.style.filter = i<val?'none':'grayscale(1) opacity(0.3)';
+    st.style.filter = i<val ? 'none' : 'grayscale(1) opacity(0.3)';
   });
   document.getElementById('starsHint').textContent = val ? hints[val] : '';
 }
 
+// ── Réponses ──────────────────────────────────────────────────
 const answers = {};
 function selectRating(btn) {
   document.querySelectorAll(`[data-q="${btn.dataset.q}"]`).forEach(b => b.classList.remove('selected'));
@@ -177,43 +184,59 @@ function selectRating(btn) {
   checkReady();
 }
 function checkReady() {
-  document.getElementById('btnSubmit').disabled = !(starValue>0 && answers['1'] && answers['2']);
+  document.getElementById('btnSubmit').disabled = !(starValue > 0 && answers['1'] && answers['2']);
 }
 
-async function submitForm() {
+// ── Soumission via iframe cachée (contourne no-cors) ──────────
+function submitForm() {
   const btn = document.getElementById('btnSubmit');
   btn.disabled = true; btn.classList.add('sending');
   btn.innerHTML = '<span>⏳</span> Envoi en cours...';
 
-  const payload = {
-    prenom, nom, email, praticien, cabinet,
-    note:    starValue,
-    q1:      answers['1'] || '',
-    q2:      answers['2'] || '',
-    q3:      document.getElementById('q3').value.trim(),
-    positif: starValue >= 4,
-    googleClique: false
-  };
+  const positif = starValue >= 4;
 
   if (scriptUrl) {
-    try {
-      await fetch(scriptUrl, {
-        method: 'POST', mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-    } catch(e) {}
+    // Créer un formulaire caché qui envoie vers Apps Script via iframe
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = scriptUrl;
+    form.target = 'hidden_iframe'; // envoie dans l'iframe cachée, pas de rechargement
+
+    const fields = {
+      action:       'saveAvis',
+      prenom, nom, email, praticien, cabinet,
+      note:         starValue,
+      q1:           answers['1'] || '',
+      q2:           answers['2'] || '',
+      q3:           document.getElementById('q3').value.trim(),
+      positif:      positif ? 'true' : 'false',
+      googleClique: 'false'
+    };
+
+    Object.entries(fields).forEach(([k,v]) => {
+      const input = document.createElement('input');
+      input.type = 'hidden'; input.name = k; input.value = v;
+      form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+    setTimeout(() => document.body.removeChild(form), 3000);
   }
 
-  document.getElementById('formCard').style.display = 'none';
-  if (starValue >= 4) {
-    document.getElementById('btnGoogle').href = googleLink;
-    document.getElementById('resultPositif').style.display = 'block';
-    setTimeout(() => window.open(googleLink, '_blank'), 1800);
-  } else {
-    document.getElementById('resultNegatif').style.display = 'block';
-  }
-  window.scrollTo({ top:0, behavior:'smooth' });
+  // Afficher le bon écran après 1 seconde
+  setTimeout(() => {
+    document.getElementById('formCard').style.display = 'none';
+    if (positif) {
+      document.getElementById('btnGoogle').href = googleLink;
+      document.getElementById('resultPositif').style.display = 'block';
+      // Ouvrir Google Business automatiquement après 2s
+      setTimeout(() => window.open(googleLink, '_blank'), 2000);
+    } else {
+      document.getElementById('resultNegatif').style.display = 'block';
+    }
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }, 1000);
 }
 </script>
 </body>
