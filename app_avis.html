@@ -530,7 +530,8 @@ async function sendQuestionnaire(sendNow) {
     civ: civility,
     email: document.getElementById('email').value.trim(),
     praticien: document.getElementById('praticien').value.trim() || 'votre praticien',
-    cabinet: cfg.cabinetName || 'Cabinet Dentaire'
+    cabinet: cfg.cabinetName || 'Cabinet Dentaire',
+    googleLink: cfg.googleLink || ''
   };
 
   try {
