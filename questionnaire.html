@@ -387,13 +387,22 @@ document.getElementById('btnShortcut').addEventListener('click', (e) => {
     alert('Merci de cocher votre consentement avant de continuer.');
     return;
   }
+
+  // CRITIQUE : on bloque le clic, on envoie l'avis, PUIS on ouvre Google.
+  // Sinon le navigateur peut tuer la requête en cours quand il navigue ailleurs.
+  e.preventDefault();
+  const targetUrl = e.currentTarget.href;
+
   sendAvisSilent(true);  // enregistre l'avis positif + clic Google = oui
-  // On affiche l'écran de remerciement après 500ms (le temps que Google s'ouvre dans le nouvel onglet)
+
+  // Petit délai pour que le POST parte effectivement, puis on ouvre Google dans un nouvel onglet.
   setTimeout(() => {
+    window.open(targetUrl, '_blank', 'noopener');
+    // Affichage de l'écran de remerciement
     document.getElementById('formCard').style.display = 'none';
     document.getElementById('resultPositif').style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, 500);
+  }, 400);
 });
 
 function sendAvisSilent(googleClicked) {
