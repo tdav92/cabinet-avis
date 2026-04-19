@@ -64,6 +64,8 @@
 
   /* Bande d'alerte */
   .alert-banner{background:linear-gradient(135deg,#fff5f5,#fed7d7);border:1.5px solid #fcb5b5;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;}
+  .alert-banner.success{background:linear-gradient(135deg,#f0f9f4,#e0f2e8);border-color:#b7e4c7;}
+  .alert-banner.success .alert-text{color:var(--green2);}
   .alert-banner.hidden{display:none;}
   .alert-icon{font-size:24px;}
   .alert-text{flex:1;font-size:13px;color:var(--red);line-height:1.5;}
@@ -118,6 +120,13 @@
   .pill.done{background:var(--green-l);color:var(--green);}
   .pill.err{background:var(--red-l);color:var(--red);}
   .empty{padding:50px 20px;text-align:center;color:var(--ink3);font-size:14px;}
+
+  /* Checkbox "Rappel effectué" dans la table */
+  .callcheck{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1.5px solid #e8e4d9;border-radius:8px;background:var(--cream);font-size:12px;font-weight:600;color:var(--ink3);cursor:pointer;transition:all 0.15s;user-select:none;white-space:nowrap;}
+  .callcheck:hover{border-color:var(--gold);}
+  .callcheck input{margin:0;cursor:pointer;width:14px;height:14px;accent-color:var(--green);}
+  .callcheck.done{background:var(--green-l);border-color:var(--green);color:var(--green);}
+  .callcheck.done:hover{background:#c4ecd1;}
   .empty-ico{font-size:36px;margin-bottom:12px;opacity:0.35;}
 
   /* PAGINATION */
@@ -620,19 +629,29 @@ function renderStats(s) {
   document.getElementById('sTauxReponse').textContent = s.totalEnvois ? (s.tauxReponse*100).toFixed(0) + '%' : '—';
   document.getElementById('sTauxConv').textContent = s.positifs ? (s.tauxConversionGoogle*100).toFixed(0) + '%' : '—';
 
-  // Alertes
-  const nAlertes = s.alertes ? s.alertes.length : 0;
+  // Alertes — distinguer ceux deja rappeles
+  const aRappeler = (allAvis || []).filter(a => +a.note > 0 && +a.note <= 2 && a.rappelEffectue !== 'Oui').length;
+  const dejaRappeles = (allAvis || []).filter(a => +a.note > 0 && +a.note <= 2 && a.rappelEffectue === 'Oui').length;
   const badge = document.getElementById('badgeAlertes');
   const banner = document.getElementById('alertBanner');
-  if (nAlertes > 0) {
-    badge.textContent = nAlertes;
+  if (aRappeler > 0) {
+    badge.textContent = aRappeler;
     badge.style.display = 'inline-flex';
     banner.classList.remove('hidden');
+    banner.classList.remove('success');
     document.getElementById('alertText').innerHTML =
-      `<strong>${nAlertes} avis récent(s) avec une note ≤ 2★.</strong> Pense à contacter ces patients rapidement.`;
+      `<strong>${aRappeler} patient${aRappeler>1?'s':''} à rappeler</strong> (avis ≤ 2★ non encore traités)` +
+      (dejaRappeles > 0 ? ` — ${dejaRappeles} déjà rappelé${dejaRappeles>1?'s':''} ✓` : '');
+  } else if (dejaRappeles > 0) {
+    badge.style.display = 'none';
+    banner.classList.remove('hidden');
+    banner.classList.add('success');
+    document.getElementById('alertText').innerHTML =
+      `✓ Tous les patients mécontents ont été rappelés (${dejaRappeles}).`;
   } else {
     badge.style.display = 'none';
     banner.classList.add('hidden');
+    banner.classList.remove('success');
   }
 
   // Graphique évolution
@@ -713,13 +732,24 @@ function renderAvisPage() {
     <thead><tr>
       <th>Date</th><th>Patient</th><th>Praticien</th>
       <th>Note</th><th>Accueil</th><th>Soin</th>
-      <th>Commentaire</th><th>Sentiment</th><th>Google</th><th>Rappel</th>
+      <th>Commentaire</th><th>Sentiment</th><th>Google</th>
+      <th>Rappel souhaité</th><th>Rappel fait ?</th>
     </tr></thead>
     <tbody>${slice.map(a => {
       const note = +a.note || 0;
       const lowNote = note > 0 && note <= 2;
+      const isLow = note > 0 && note <= 3;
       const comment = a.commentaire || a.raisonMecontentement || '';
       const rappel = a.rappelSouhaite === 'Oui' ? '📞 ' + (a.telephoneRappel || '') : '—';
+      const done = a.rappelEffectue === 'Oui';
+      // La case "Rappel fait" n'apparait que si l'avis est negatif (1-3 étoiles).
+      // Pour les avis positifs, pas besoin de relancer.
+      const callCell = isLow
+        ? `<label class="callcheck ${done?'done':''}" title="${done && a.dateRappel ? 'Rappelé le ' + escapeHtml(a.dateRappel) : 'Cocher quand le patient a été rappelé'}">
+             <input type="checkbox" ${done?'checked':''} onchange="toggleCall(${a.rowIndex}, this.checked, this)">
+             <span>${done ? '✓ Fait' : 'À faire'}</span>
+           </label>`
+        : '<span style="color:#ccc;">—</span>';
       return `
       <tr class="${lowNote?'low-note':''}">
         <td>${escapeHtml(a.date)}</td>
@@ -732,12 +762,56 @@ function renderAvisPage() {
         <td><span class="pill ${a.sentiment==='Positif'?'pos':'neg'}">${a.sentiment==='Positif'?'😊':'😞'} ${escapeHtml(a.sentiment||'')}</span></td>
         <td><span class="pill ${a.cliqueGoogle==='Oui'?'gyes':'gno'}">${a.cliqueGoogle==='Oui'?'✓':'✕'}</span></td>
         <td style="font-size:12px;">${escapeHtml(rappel)}</td>
+        <td>${callCell}</td>
       </tr>`;
     }).join('')}
     </tbody>
   </table>`;
 
   renderPagination('avis', pageAvis, totalPages, total);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MARQUER UN PATIENT COMME RAPPELÉ
+// ═══════════════════════════════════════════════════════════════
+async function toggleCall(rowIndex, done, checkbox) {
+  // Mise à jour visuelle immédiate (optimiste)
+  const label = checkbox.closest('.callcheck');
+  label.classList.toggle('done', done);
+  label.querySelector('span').textContent = done ? '✓ Fait' : 'À faire';
+
+  // Mise à jour côté serveur
+  try {
+    await postToScript({
+      action: 'markCalled',
+      secret: cfg.secret,
+      rowIndex: rowIndex,
+      done: done ? 'true' : 'false'
+    });
+    toast(done ? 'Rappel marqué comme effectué ✓' : 'Marque retirée', 's');
+
+    // Mettre à jour les données locales pour que le prochain rendu reflete le changement
+    const item = allAvis.find(x => x.rowIndex === rowIndex);
+    if (item) {
+      item.rappelEffectue = done ? 'Oui' : '';
+      if (done) {
+        const now = new Date();
+        item.dateRappel = String(now.getDate()).padStart(2,'0') + '/' +
+                          String(now.getMonth()+1).padStart(2,'0') + '/' +
+                          now.getFullYear() + ' ' +
+                          String(now.getHours()).padStart(2,'0') + ':' +
+                          String(now.getMinutes()).padStart(2,'0');
+      } else {
+        item.dateRappel = '';
+      }
+    }
+  } catch(e) {
+    // Rollback visuel si erreur
+    label.classList.toggle('done', !done);
+    label.querySelector('span').textContent = !done ? '✓ Fait' : 'À faire';
+    checkbox.checked = !done;
+    toast('Erreur : ' + e.message, 'e');
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
