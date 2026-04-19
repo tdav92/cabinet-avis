@@ -37,14 +37,16 @@
   .star:hover,.star.active{filter:none;transform:scale(1.12);}
   .stars-hint{text-align:center;margin-top:12px;font-size:14px;color:var(--gold);font-weight:600;min-height:22px;}
 
-  /* Shortcut direct Google pour 4-5★ */
-  .shortcut{background:linear-gradient(135deg,#f0f9f4,#e0f2e8);border:1.5px solid #b7e4c7;border-radius:14px;padding:20px;margin-bottom:24px;display:none;animation:fadeUp 0.3s ease both;}
+  /* Shortcut direct Google pour 4-5★ — devient la CTA principale */
+  .shortcut{background:linear-gradient(135deg,#f0f9f4,#e0f2e8);border:2px solid #b7e4c7;border-radius:16px;padding:32px 28px;margin-bottom:20px;display:none;animation:fadeUp 0.3s ease both;text-align:center;}
   .shortcut.show{display:block;}
-  .shortcut-title{font-weight:600;color:var(--green2);font-size:14px;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
-  .shortcut-text{font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:14px;}
-  .btn-shortcut{width:100%;padding:14px;background:linear-gradient(135deg,var(--green),var(--green2));color:var(--white);border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;transition:transform 0.15s;}
-  .btn-shortcut:hover{transform:translateY(-1px);}
-  .shortcut-or{text-align:center;margin-top:12px;font-size:12px;color:var(--ink3);}
+  .shortcut-emoji{font-size:48px;margin-bottom:12px;}
+  .shortcut-title{font-family:'Playfair Display',serif;font-weight:700;color:var(--green2);font-size:22px;margin-bottom:10px;}
+  .shortcut-text{font-size:15px;color:var(--ink2);line-height:1.6;margin-bottom:22px;max-width:420px;margin-left:auto;margin-right:auto;}
+  .btn-shortcut{width:100%;padding:18px;background:linear-gradient(135deg,var(--green),var(--green2));color:var(--white);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;text-decoration:none;transition:all 0.2s;min-height:60px;letter-spacing:0.02em;box-shadow:0 8px 24px rgba(45,106,79,0.2);}
+  .btn-shortcut:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(45,106,79,0.3);}
+  .shortcut-skip{display:inline-block;margin-top:16px;font-size:13px;color:var(--ink3);text-decoration:underline;cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;}
+  .shortcut-skip:hover{color:var(--ink2);}
 
   .questions{display:flex;flex-direction:column;gap:24px;margin-bottom:24px;}
   .q-block{display:none;}
@@ -134,16 +136,17 @@
       <div class="stars-hint" id="starsHint">Touchez une étoile</div>
     </div>
 
-    <!-- Raccourci direct Google pour 4★ / 5★ (apparaît dès la sélection) -->
+    <!-- Raccourci direct Google pour 4★ / 5★ — remplace le questionnaire interne -->
     <div class="shortcut" id="shortcut">
-      <div class="shortcut-title">✨ Merci pour cette belle note !</div>
+      <div class="shortcut-emoji">🌟</div>
+      <div class="shortcut-title">Merci pour cette belle note !</div>
       <div class="shortcut-text">
-        Si vous avez 30 secondes, pourriez-vous partager votre avis sur Google ? Cela nous aide beaucoup.
+        Si vous avez 30 secondes, partagez votre avis sur Google. Cela nous aide énormément à faire connaître le cabinet auprès d'autres patients.
       </div>
       <a href="#" id="btnShortcut" class="btn-shortcut" target="_blank" rel="noopener">
-        <span>🔍</span> Partager directement sur Google
+        <span>🔍</span> Publier mon avis sur Google
       </a>
-      <div class="shortcut-or">— ou continuez le questionnaire ci-dessous —</div>
+      <button type="button" class="shortcut-skip" id="btnSkip" onclick="skipGoogle()">Pas maintenant, merci</button>
     </div>
 
     <!-- Questions (apparaissent progressivement) -->
@@ -298,19 +301,29 @@ function updateStars(val) {
 // Quand l'utilisateur sélectionne une note, on adapte le questionnaire
 function onStarsChanged() {
   const good = starValue >= 4;
+  const btnSubmit = document.getElementById('btnSubmit');
 
-  // Shortcut Google (uniquement 4-5★)
-  document.getElementById('shortcut').classList.toggle('show', good && googleLink !== '#');
-
-  // Questions toujours affichées : accueil + soin
-  document.getElementById('q-accueil').classList.add('show');
-  document.getElementById('q-soin').classList.add('show');
-
-  // Notes basses (1-3) : raison + rappel, pas de commentaire générique
-  // Notes hautes (4-5) : commentaire libre, pas de rappel
-  document.getElementById('q-raison').classList.toggle('show', !good);
-  document.getElementById('q-rappel').classList.toggle('show', !good);
-  document.getElementById('q-commentaire').classList.toggle('show', good);
+  if (good) {
+    // ═══ NOTE HAUTE (4-5★) : uniquement la proposition Google, rien d'autre ═══
+    document.getElementById('shortcut').classList.add('show');
+    // Masquer TOUTES les questions internes
+    document.getElementById('q-accueil').classList.remove('show');
+    document.getElementById('q-soin').classList.remove('show');
+    document.getElementById('q-raison').classList.remove('show');
+    document.getElementById('q-rappel').classList.remove('show');
+    document.getElementById('q-commentaire').classList.remove('show');
+    // Masquer le bouton d'envoi classique (l'action se fait via Google / Skip)
+    btnSubmit.style.display = 'none';
+  } else {
+    // ═══ NOTE BASSE (1-3★) : questionnaire interne complet ═══
+    document.getElementById('shortcut').classList.remove('show');
+    document.getElementById('q-accueil').classList.add('show');
+    document.getElementById('q-soin').classList.add('show');
+    document.getElementById('q-raison').classList.add('show');
+    document.getElementById('q-rappel').classList.add('show');
+    document.getElementById('q-commentaire').classList.remove('show');
+    btnSubmit.style.display = 'flex';
+  }
 
   checkReady();
 }
@@ -325,11 +338,33 @@ function selectRating(btn) {
 }
 
 function checkReady() {
+  // En mode 4-5★ : pas de bouton submit à activer (Google / Skip prennent le relais)
+  if (starValue >= 4) return;
   const rgpd = document.getElementById('chkRGPD').checked;
   const ok = starValue > 0 && answers['1'] && answers['2'] && rgpd;
   document.getElementById('btnSubmit').disabled = !ok;
 }
 document.getElementById('chkRGPD').addEventListener('change', checkReady);
+
+// Si le patient refuse l'invitation Google, on enregistre quand même son avis positif
+// (4-5★ + consentement RGPD) et on affiche l'écran de remerciement.
+function skipGoogle() {
+  const rgpdOK = document.getElementById('chkRGPD').checked;
+  if (!rgpdOK) {
+    alert('Merci de cocher votre consentement avant de continuer.');
+    return;
+  }
+  sendAvisSilent(false); // enregistre l'avis positif sans clic Google
+  setTimeout(() => {
+    document.getElementById('formCard').style.display = 'none';
+    document.getElementById('resultPositif').style.display = 'block';
+    // Adapter le message puisqu'il n'a pas cliqué sur Google
+    const screen = document.querySelector('#resultPositif .result-screen');
+    screen.querySelector('h2').textContent = 'Merci pour votre avis !';
+    screen.querySelector('p').innerHTML = 'Votre retour est bien enregistré. Si vous changez d\'avis, vous pouvez toujours le partager sur Google :';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 500);
+}
 
 function toggleRappel() {
   const show = document.getElementById('chkRappel').checked;
@@ -343,7 +378,19 @@ function toggleRGPD(e) {
 
 // ── Shortcut Google : on track le clic ET on envoie silencieusement l'avis positif
 document.getElementById('btnShortcut').addEventListener('click', (e) => {
-  sendAvisSilent(true);  // enregistre le clic Google + l'avis implicite 4/5★
+  const rgpdOK = document.getElementById('chkRGPD').checked;
+  if (!rgpdOK) {
+    e.preventDefault();
+    alert('Merci de cocher votre consentement avant de continuer.');
+    return;
+  }
+  sendAvisSilent(true);  // enregistre l'avis positif + clic Google = oui
+  // On affiche l'écran de remerciement après 500ms (le temps que Google s'ouvre dans le nouvel onglet)
+  setTimeout(() => {
+    document.getElementById('formCard').style.display = 'none';
+    document.getElementById('resultPositif').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 500);
 });
 
 function sendAvisSilent(googleClicked) {
