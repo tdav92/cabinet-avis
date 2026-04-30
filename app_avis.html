@@ -127,6 +127,52 @@
   .callcheck input{margin:0;cursor:pointer;width:14px;height:14px;accent-color:var(--green);}
   .callcheck.done{background:var(--green-l);border-color:var(--green);color:var(--green);}
   .callcheck.done:hover{background:#c4ecd1;}
+
+  /* Select praticien */
+  select.select-pratien{padding:13px 15px;border:1.5px solid #e8e4d9;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--cream);outline:none;transition:all 0.2s;width:100%;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='%237a8a9a' d='M6 8L0 0h12z'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;}
+  select.select-pratien:focus{border-color:var(--gold);background-color:var(--white);box-shadow:0 0 0 3px rgba(201,168,76,0.1);}
+  select.select-mini{padding:6px 28px 6px 10px;border:1.5px solid #e8e4d9;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--white);outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%237a8a9a' d='M5 6L0 0h10z'/></svg>");background-repeat:no-repeat;background-position:right 8px center;}
+  select.select-mini:focus{border-color:var(--gold);}
+
+  /* Import CSV */
+  .dropzone{border:2px dashed #d4ccb8;border-radius:14px;padding:48px 24px;text-align:center;background:var(--cream);transition:all 0.2s;cursor:pointer;}
+  .dropzone:hover,.dropzone.dragover{border-color:var(--gold);background:#fffdf5;}
+  .dropzone-icon{font-size:48px;margin-bottom:12px;opacity:0.5;}
+  .dropzone-title{font-size:16px;font-weight:600;color:var(--ink);margin-bottom:6px;}
+  .dropzone-hint{font-size:13px;color:var(--ink3);}
+  .dropzone input[type=file]{display:none;}
+  .import-stats{display:flex;gap:16px;flex-wrap:wrap;padding:16px 20px;background:var(--surface);border-radius:10px;margin:16px 0;font-size:13px;}
+  .import-stats .ist{display:flex;align-items:center;gap:6px;color:var(--ink2);}
+  .import-stats .ist strong{color:var(--ink);font-weight:700;}
+  .import-stats .ist.green strong{color:var(--green);}
+  .import-stats .ist.orange strong{color:var(--orange);}
+  .import-stats .ist.red strong{color:var(--red);}
+
+  .row-action{display:flex;gap:6px;}
+  .btn-row-act{padding:6px 12px;border:1.5px solid #e8e4d9;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;background:var(--white);color:var(--ink2);transition:all 0.15s;white-space:nowrap;}
+  .btn-row-act:hover{border-color:#ccc;}
+  .btn-row-act.send.selected{background:var(--green);color:var(--white);border-color:var(--green);}
+  .btn-row-act.skip.selected{background:#999;color:var(--white);border-color:#999;}
+  .btn-row-act:disabled{opacity:0.4;cursor:not-allowed;}
+  tr.row-skip{opacity:0.4;}
+  tr.row-send{background:#f0f9f4 !important;}
+  .pill.dup{background:#fef3c7;color:#92400e;}
+
+  /* Dentistes */
+  .dentist-card{border:1px solid #e8e4d9;border-radius:12px;padding:18px 20px;margin-bottom:12px;display:flex;align-items:center;gap:16px;background:var(--white);transition:all 0.15s;}
+  .dentist-card:hover{border-color:#ccc;box-shadow:var(--shadow2);}
+  .dentist-card.inactive{opacity:0.55;background:var(--surface);}
+  .dentist-info{flex:1;min-width:0;}
+  .dentist-nom{font-weight:700;color:var(--ink);font-size:15px;margin-bottom:4px;}
+  .dentist-stats-row{display:flex;gap:14px;font-size:12px;color:var(--ink3);flex-wrap:wrap;}
+  .dentist-stats-row strong{color:var(--ink);font-weight:600;}
+  .dentist-actions{display:flex;gap:6px;flex-shrink:0;}
+  .toggle{position:relative;display:inline-block;width:38px;height:22px;}
+  .toggle input{display:none;}
+  .toggle-slider{position:absolute;cursor:pointer;inset:0;background:#ccc;border-radius:22px;transition:0.2s;}
+  .toggle-slider::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:white;border-radius:50%;transition:0.2s;}
+  .toggle input:checked + .toggle-slider{background:var(--green);}
+  .toggle input:checked + .toggle-slider::before{transform:translateX(16px);}
   .empty-ico{font-size:36px;margin-bottom:12px;opacity:0.35;}
 
   /* PAGINATION */
@@ -217,9 +263,11 @@
 
 <div class="tabs">
   <button class="tab active" onclick="switchTab('envoyer',this)">📨 <span class="tab-label">Envoyer</span></button>
+  <button class="tab" onclick="switchTab('import',this)">📥 <span class="tab-label">Import CSV</span></button>
   <button class="tab" onclick="switchTab('avis',this)">⭐ <span class="tab-label">Tableau de bord</span> <span class="tab-badge alert" id="badgeAlertes" style="display:none;">0</span></button>
   <button class="tab" onclick="switchTab('listing',this)">📋 <span class="tab-label">Envois</span> <span class="tab-badge" id="badgeEnvois">0</span></button>
   <button class="tab" onclick="switchTab('programmes',this)">⏰ <span class="tab-label">Programmés</span> <span class="tab-badge" id="badgeProgrammes">0</span></button>
+  <button class="tab" onclick="switchTab('dentistes',this)">👨‍⚕️ <span class="tab-label">Dentistes</span></button>
 </div>
 
 <div class="main">
@@ -255,7 +303,9 @@
           </div>
           <div class="fg form-full">
             <label>Praticien</label>
-            <input type="text" id="praticien" placeholder="Dr. Martin" oninput="updatePreview()">
+            <select id="praticien" class="select-pratien" onchange="updatePreview()">
+              <option value="">Choisir un praticien...</option>
+            </select>
           </div>
         </div>
         <div class="preview-box">
@@ -276,6 +326,46 @@
         <p class="send-info">
           L'envoi programmé part automatiquement à <strong>9h le lendemain</strong> — le meilleur créneau pour être lu.
         </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL IMPORT CSV ══ -->
+  <div class="panel" id="panel-import">
+    <div class="card">
+      <div class="card-head">
+        <h3>Import depuis Doctolib</h3>
+        <span style="font-size:12px;color:var(--ink3);">Exportez le CSV de votre journée puis chargez-le ici</span>
+      </div>
+      <div class="card-body">
+        <div class="dropzone" id="dropzone" onclick="document.getElementById('csvFile').click()">
+          <div class="dropzone-icon">📥</div>
+          <div class="dropzone-title">Glissez votre fichier CSV ici</div>
+          <div class="dropzone-hint">ou cliquez pour le sélectionner — uniquement les RDV honorés seront affichés</div>
+          <input type="file" id="csvFile" accept=".csv,text/csv" onchange="handleCSVFile(event)">
+        </div>
+        <div id="importContent" style="display:none;margin-top:20px;">
+          <div class="import-stats" id="importStats"></div>
+          <div class="search-bar" style="margin-bottom:14px;">
+            <button class="btn-row-act send selected" onclick="bulkAction('send')">✉ Tout sélectionner pour envoi</button>
+            <button class="btn-row-act skip" onclick="bulkAction('skip')">✕ Tout ignorer</button>
+            <button class="btn-row-act" onclick="resetImport()" style="margin-left:auto;">🗑 Annuler l'import</button>
+          </div>
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead><tr>
+                <th>Date RDV</th><th>Patient</th><th>Email</th><th>Motif</th>
+                <th>Praticien</th><th style="text-align:center;">Action</th>
+              </tr></thead>
+              <tbody id="importTbody"></tbody>
+            </table>
+          </div>
+          <div style="display:flex;justify-content:center;margin-top:20px;">
+            <button class="btn-send primary" id="btnBulkSchedule" onclick="bulkSchedule()" style="max-width:380px;width:100%;">
+              <span>⏰</span> Programmer les envois pour demain 9h
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -384,6 +474,26 @@
     </div>
   </div>
 
+  <!-- ══ PANEL DENTISTES ══ -->
+  <div class="panel" id="panel-dentistes">
+    <div class="card">
+      <div class="card-head">
+        <h3>Gestion des praticiens</h3>
+        <div class="search-bar">
+          <button class="btn-refresh" onclick="loadDentistes()"><span id="r4">↻</span> Actualiser</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+          <input type="text" id="newDentistName" placeholder="Nom du praticien (ex. Dr ZERBIB David)"
+                 style="flex:1;min-width:240px;padding:11px 14px;border:1.5px solid #e8e4d9;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--cream);outline:none;">
+          <button class="btn-prim" onclick="addDentist()" style="padding:11px 20px;flex-shrink:0;">+ Ajouter</button>
+        </div>
+        <div id="dentistesList"><div class="empty"><div class="empty-ico">👨‍⚕️</div>Aucun praticien enregistré</div></div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- MODAL CONFIG -->
@@ -440,12 +550,14 @@ window.onload = () => {
   updatePreview();
   if (cfg.scriptUrl && cfg.secret) {
     setStatus('Configuré', 'on');
-    loadEnvois();  // pré-charge les badges
+    loadEnvois();
     loadProgrammes();
+    loadDentistes();  // pour remplir le menu déroulant
   } else {
     setStatus('Non configuré', 'err');
     openModal();
   }
+  setupDropzone();
 };
 
 function restoreCfg() {
@@ -516,10 +628,17 @@ function checkReady() {
   const ok = cfg.scriptUrl && cfg.secret && civility &&
     document.getElementById('prenom').value.trim() &&
     document.getElementById('nom').value.trim() &&
-    EMAIL_RE.test(document.getElementById('email').value.trim());
+    EMAIL_RE.test(document.getElementById('email').value.trim()) &&
+    document.getElementById('praticien').value.trim();
   document.getElementById('btnSchedule').disabled = !ok;
   document.getElementById('btnSendNow').disabled = !ok;
 }
+
+// Recheck quand on change le praticien dans le menu
+document.addEventListener('DOMContentLoaded', () => {
+  const sel = document.getElementById('praticien');
+  if (sel) sel.addEventListener('change', checkReady);
+});
 
 // ═══════════════════════════════════════════════════════════════
 // ENVOI QUESTIONNAIRE (programmé ou immédiat)
@@ -612,6 +731,10 @@ async function loadAvis() {
     pageAvis = 1;
     renderStats(statsRes.stats);
     renderAvisPage();
+    // Si l'onglet Dentistes est ouvert, on rafraîchit les stats
+    if (document.getElementById('panel-dentistes').classList.contains('active')) {
+      renderDentistesList();
+    }
     toast(`${allAvis.length} avis chargés ✓`, 's');
   } catch(e) {
     toast('Erreur : ' + e.message, 'e');
@@ -621,6 +744,7 @@ async function loadAvis() {
 }
 
 function renderStats(s) {
+  window._lastStats = s;  // stocker pour utilisation par d'autres onglets (ex. dentistes)
   document.getElementById('sTotal').textContent = s.totalAvis;
   document.getElementById('sTotalSub').textContent = `Sur ${s.totalEnvois} envois`;
   document.getElementById('sMoyenne').textContent = s.totalAvis ? s.noteMoyenne.toFixed(1) + '★' : '—';
@@ -973,6 +1097,400 @@ async function exportCSV() {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// DENTISTES (CRUD)
+// ═══════════════════════════════════════════════════════════════
+let allDentistes = [];
+
+async function loadDentistes() {
+  if (!cfg.scriptUrl || !cfg.secret) return;
+  const ico = document.getElementById('r4');
+  if (ico) ico.classList.add('spinning');
+  try {
+    const d = await apiGet('dentistes');
+    allDentistes = d.dentistes || [];
+    fillPraticienSelect();
+    renderDentistesList();
+  } catch(e) {
+    toast('Erreur dentistes : ' + e.message, 'e');
+  } finally {
+    if (ico) ico.classList.remove('spinning');
+  }
+}
+
+function fillPraticienSelect() {
+  // Remplir le select du formulaire d'envoi
+  fillSelect(document.getElementById('praticien'), '', true);
+  // Remplir tous les selects du tableau d'import s'ils existent
+  document.querySelectorAll('.select-import-pratien').forEach(sel => {
+    const current = sel.value;
+    fillSelect(sel, current, false);
+  });
+}
+
+function fillSelect(sel, currentValue, withPlaceholder) {
+  if (!sel) return;
+  const actifs = allDentistes.filter(d => d.actif);
+  const opts = withPlaceholder ? '<option value="">Choisir un praticien...</option>' : '';
+  sel.innerHTML = opts + actifs.map(d =>
+    `<option value="${escapeHtml(d.nom)}" ${d.nom === currentValue ? 'selected' : ''}>${escapeHtml(d.nom)}</option>`
+  ).join('');
+}
+
+function renderDentistesList() {
+  const container = document.getElementById('dentistesList');
+  if (!container) return;
+  if (!allDentistes.length) {
+    container.innerHTML = '<div class="empty"><div class="empty-ico">👨‍⚕️</div>Aucun praticien — ajoutez-en un avec le formulaire ci-dessus</div>';
+    return;
+  }
+  // Charger aussi les stats par praticien si on les a
+  const statsByName = (window._lastStats && window._lastStats.byPraticien) || {};
+
+  container.innerHTML = allDentistes.map(d => {
+    const stats = statsByName[d.nom];
+    const statsHtml = stats
+      ? `<div class="dentist-stats-row">
+           <span><strong>${stats.count}</strong> avis</span>
+           <span><strong>${stats.moyenne.toFixed(1)}★</strong> moyenne</span>
+           <span><strong>${stats.positifs}</strong> positifs</span>
+           <span><strong>${stats.negatifs || 0}</strong> ≤ 2★</span>
+           <span><strong>${stats.googleClics}</strong> clics Google</span>
+           <span><strong>${(stats.tauxConversionGoogle * 100).toFixed(0)}%</strong> conversion</span>
+         </div>`
+      : '<div class="dentist-stats-row"><em style="color:#bbb;">Pas encore d\'avis</em></div>';
+
+    return `
+      <div class="dentist-card ${d.actif ? '' : 'inactive'}">
+        <div class="dentist-info">
+          <div class="dentist-nom">${escapeHtml(d.nom)}</div>
+          ${statsHtml}
+        </div>
+        <div class="dentist-actions">
+          <label class="toggle" title="${d.actif ? 'Actif' : 'Inactif'}">
+            <input type="checkbox" ${d.actif ? 'checked' : ''} onchange="toggleDentist(${d.rowIndex}, this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+          <button class="btn-row-act" onclick="renameDentist(${d.rowIndex}, '${escapeHtml(d.nom).replace(/'/g, "\\'")}')">✏ Renommer</button>
+          <button class="btn-row-act" style="color:var(--red);" onclick="deleteDentist(${d.rowIndex}, '${escapeHtml(d.nom).replace(/'/g, "\\'")}')">🗑</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function addDentist() {
+  const input = document.getElementById('newDentistName');
+  const nom = input.value.trim();
+  if (!nom) { toast('Saisissez un nom', 'e'); return; }
+  try {
+    await postToScript({ action: 'addDentist', secret: cfg.secret, nom: nom });
+    input.value = '';
+    toast('Praticien ajouté ✓', 's');
+    setTimeout(() => loadDentistes(), 1000);
+  } catch(e) { toast('Erreur : ' + e.message, 'e'); }
+}
+
+async function toggleDentist(rowIndex, actif) {
+  try {
+    await postToScript({ action: 'updateDentist', secret: cfg.secret, rowIndex: rowIndex, actif: actif ? 'true' : 'false' });
+    toast(actif ? 'Praticien activé' : 'Praticien désactivé', 's');
+    setTimeout(() => loadDentistes(), 800);
+  } catch(e) { toast('Erreur : ' + e.message, 'e'); }
+}
+
+async function renameDentist(rowIndex, currentName) {
+  const nom = prompt('Nouveau nom du praticien :', currentName);
+  if (!nom || nom.trim() === currentName) return;
+  try {
+    await postToScript({ action: 'updateDentist', secret: cfg.secret, rowIndex: rowIndex, nom: nom.trim() });
+    toast('Renommé ✓', 's');
+    setTimeout(() => loadDentistes(), 800);
+  } catch(e) { toast('Erreur : ' + e.message, 'e'); }
+}
+
+async function deleteDentist(rowIndex, nom) {
+  if (!confirm('Supprimer définitivement "' + nom + '" ?\n\n(Les anciens avis de ce praticien resteront, mais il ne sera plus dans la liste)')) return;
+  try {
+    await postToScript({ action: 'deleteDentist', secret: cfg.secret, rowIndex: rowIndex });
+    toast('Supprimé ✓', 's');
+    setTimeout(() => loadDentistes(), 800);
+  } catch(e) { toast('Erreur : ' + e.message, 'e'); }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// IMPORT CSV DOCTOLIB
+// ═══════════════════════════════════════════════════════════════
+let importedRows = [];   // état après parsing
+let importActions = {};  // index -> 'send' | 'skip'
+
+function setupDropzone() {
+  const dz = document.getElementById('dropzone');
+  if (!dz) return;
+  ['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => {
+    e.preventDefault(); e.stopPropagation(); dz.classList.add('dragover');
+  }));
+  ['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => {
+    e.preventDefault(); e.stopPropagation(); dz.classList.remove('dragover');
+  }));
+  dz.addEventListener('drop', e => {
+    const file = e.dataTransfer.files[0];
+    if (file) parseCSVFile(file);
+  });
+}
+
+function handleCSVFile(event) {
+  const file = event.target.files[0];
+  if (file) parseCSVFile(file);
+}
+
+function parseCSVFile(file) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    let text = e.target.result;
+    // Détection encoding : si on voit des caractères bizarres, on retente en latin1
+    if (text.indexOf('\uFFFD') !== -1) {
+      const reader2 = new FileReader();
+      reader2.onload = function(e2) {
+        processCSVText(e2.target.result);
+      };
+      reader2.readAsText(file, 'iso-8859-1');
+    } else {
+      processCSVText(text);
+    }
+  };
+  reader.readAsText(file, 'utf-8');
+}
+
+function processCSVText(text) {
+  // Parser CSV avec gestion des champs entre guillemets
+  const lines = parseCSVLines(text);
+  if (lines.length < 2) {
+    toast('Fichier CSV vide ou invalide', 'e');
+    return;
+  }
+  const headers = lines[0];
+  const rows = lines.slice(1);
+
+  // Trouver les indices de colonnes utiles
+  const idx = {
+    civ:        headers.indexOf('Civilité'),
+    prenom:     headers.indexOf('Prénom du patient'),
+    nom:        headers.indexOf('Nom du patient'),
+    email:      headers.indexOf('Email du patient'),
+    telephone:  headers.indexOf('Téléphone portable'),
+    date:       headers.indexOf('Date de début'),
+    heure:      headers.indexOf('Début'),
+    agenda:     headers.indexOf('Agenda'),
+    motif:      headers.indexOf('Motif du RDV'),
+    statut:     headers.indexOf('Statut'),
+    nouveau:    headers.indexOf('Nouveau patient')
+  };
+
+  if (idx.email === -1 || idx.nom === -1 || idx.prenom === -1) {
+    toast('Colonnes manquantes dans le CSV — vérifiez l\'export Doctolib', 'e');
+    return;
+  }
+
+  importedRows = [];
+  importActions = {};
+  let rejected = { noEmail: 0, notHonored: 0, total: 0 };
+
+  rows.forEach(r => {
+    const statut = (r[idx.statut] || '').trim();
+    const email = (r[idx.email] || '').trim();
+    rejected.total++;
+
+    // Filtre 1 : statut
+    // Doctolib statuts honorés : "Vu", "Honoré", parfois vide pour les RDV passés mais validés
+    // On exclut explicitement les "Annulé", "Pas venu", "Reporté"
+    const statutLower = statut.toLowerCase();
+    if (statutLower.indexOf('annul') >= 0 || statutLower.indexOf('pas venu') >= 0 ||
+        statutLower.indexOf('report') >= 0 || statutLower.indexOf('absent') >= 0) {
+      rejected.notHonored++;
+      return;
+    }
+
+    // Filtre 2 : email manquant ou invalide
+    if (!email || !EMAIL_RE.test(email)) {
+      rejected.noEmail++;
+      return;
+    }
+
+    importedRows.push({
+      civ:       r[idx.civ] || '',
+      prenom:    r[idx.prenom] || '',
+      nom:       (r[idx.nom] || '').toUpperCase(),
+      email:     email,
+      telephone: r[idx.telephone] || '',
+      date:      r[idx.date] || '',
+      heure:     r[idx.heure] || '',
+      agenda:    r[idx.agenda] || '',
+      motif:     r[idx.motif] || '',
+      statut:    statut,
+      nouveau:   (r[idx.nouveau] || '').toLowerCase().indexOf('oui') >= 0
+    });
+  });
+
+  // Marquer tous "send" par défaut
+  importedRows.forEach((_, i) => importActions[i] = 'send');
+
+  renderImportTable(rejected);
+  document.getElementById('importContent').style.display = 'block';
+  toast(`${importedRows.length} patients chargés (${rejected.notHonored} non honorés, ${rejected.noEmail} sans email)`, 's');
+}
+
+// Parse texte CSV en respectant les guillemets et les retours-ligne dans les champs
+function parseCSVLines(text) {
+  const lines = [];
+  let cur = [];
+  let field = '';
+  let inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i+1] === '"') { field += '"'; i++; }
+        else { inQuotes = false; }
+      } else {
+        field += c;
+      }
+    } else {
+      if (c === '"') { inQuotes = true; }
+      else if (c === ';') { cur.push(field); field = ''; }
+      else if (c === '\n' || c === '\r') {
+        if (field !== '' || cur.length) { cur.push(field); lines.push(cur); cur = []; field = ''; }
+        if (c === '\r' && text[i+1] === '\n') i++;
+      } else {
+        field += c;
+      }
+    }
+  }
+  if (field !== '' || cur.length) { cur.push(field); lines.push(cur); }
+  return lines;
+}
+
+function renderImportTable(rejected) {
+  const stats = document.getElementById('importStats');
+  const sendCount = Object.values(importActions).filter(v => v === 'send').length;
+  const skipCount = Object.values(importActions).filter(v => v === 'skip').length;
+  stats.innerHTML = `
+    <div class="ist green"><strong>${sendCount}</strong> à envoyer</div>
+    <div class="ist"><strong>${skipCount}</strong> ignorés</div>
+    <div class="ist orange"><strong>${rejected ? rejected.noEmail : '–'}</strong> écartés (sans email)</div>
+    <div class="ist red"><strong>${rejected ? rejected.notHonored : '–'}</strong> écartés (annulés / non honorés)</div>
+  `;
+
+  const tbody = document.getElementById('importTbody');
+  if (!importedRows.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="empty">Aucun patient à traiter</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = importedRows.map((r, i) => {
+    const action = importActions[i] || 'send';
+    const dateAff = r.date ? r.date.replace(/"/g,'') + (r.heure ? ' ' + r.heure.replace(/"/g,'') : '') : '';
+    const newBadge = r.nouveau ? '<span class="pill" style="background:#e0f0ff;color:var(--blue);font-size:10px;margin-left:6px;">Nouveau</span>' : '';
+    return `
+      <tr class="row-${action}" data-row="${i}">
+        <td style="font-size:12px;white-space:nowrap;">${escapeHtml(dateAff)}</td>
+        <td class="td-name">${escapeHtml(r.civ)} ${escapeHtml(r.prenom)} ${escapeHtml(r.nom)}${newBadge}</td>
+        <td style="font-size:12px;">${escapeHtml(r.email)}</td>
+        <td style="font-size:12px;max-width:200px;">${escapeHtml(r.motif)}</td>
+        <td>
+          <select class="select-mini select-import-pratien" data-row="${i}" onchange="updatePraticienImport(${i}, this.value)">
+            <option value="${escapeHtml(r.agenda)}">${escapeHtml(r.agenda) || '—'}</option>
+          </select>
+        </td>
+        <td style="text-align:center;">
+          <div class="row-action">
+            <button class="btn-row-act send ${action==='send'?'selected':''}" onclick="setRowAction(${i},'send')">✉ Envoyer</button>
+            <button class="btn-row-act skip ${action==='skip'?'selected':''}" onclick="setRowAction(${i},'skip')">✕ Ignorer</button>
+          </div>
+        </td>
+      </tr>`;
+  }).join('');
+
+  // Re-remplir les selects avec la liste complète des dentistes
+  fillPraticienSelect();
+}
+
+function setRowAction(i, action) {
+  importActions[i] = action;
+  const tr = document.querySelector('tr[data-row="'+i+'"]');
+  if (tr) {
+    tr.classList.remove('row-send','row-skip');
+    tr.classList.add('row-'+action);
+    tr.querySelectorAll('.btn-row-act').forEach(b => b.classList.remove('selected'));
+    tr.querySelector('.btn-row-act.'+action).classList.add('selected');
+  }
+  // Refresh des stats
+  const stats = document.getElementById('importStats');
+  const sendCount = Object.values(importActions).filter(v => v === 'send').length;
+  const skipCount = Object.values(importActions).filter(v => v === 'skip').length;
+  stats.querySelector('.ist.green strong').textContent = sendCount;
+  stats.querySelector('.ist:not(.green):not(.orange):not(.red) strong').textContent = skipCount;
+}
+
+function updatePraticienImport(i, value) {
+  if (importedRows[i]) importedRows[i].agenda = value;
+}
+
+function bulkAction(action) {
+  importedRows.forEach((_, i) => importActions[i] = action);
+  renderImportTable();
+}
+
+function resetImport() {
+  importedRows = [];
+  importActions = {};
+  document.getElementById('importContent').style.display = 'none';
+  document.getElementById('csvFile').value = '';
+}
+
+async function bulkSchedule() {
+  const toSend = importedRows
+    .map((r, i) => ({ ...r, _idx: i }))
+    .filter(r => importActions[r._idx] === 'send');
+
+  if (!toSend.length) { toast('Aucun patient sélectionné', 'e'); return; }
+  if (!confirm(`Programmer l'envoi à ${toSend.length} patient(s) pour demain 9h ?`)) return;
+
+  const btn = document.getElementById('btnBulkSchedule');
+  btn.disabled = true;
+  btn.classList.add('sending');
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<span>⏳</span> Programmation en cours...';
+
+  try {
+    // Construire le payload avec une praticien depuis le select de chaque ligne
+    const patients = toSend.map(r => ({
+      civ: r.civ,
+      prenom: r.prenom,
+      nom: r.nom,
+      email: r.email,
+      praticien: r.agenda
+    }));
+
+    await postToScript({
+      action: 'bulkSchedule',
+      secret: cfg.secret,
+      cabinet: cfg.cabinetName || 'Cabinet Dentaire',
+      googleLink: cfg.googleLink || '',
+      patients: patients
+    });
+
+    toast(`${toSend.length} envois programmés ✓`, 's');
+    resetImport();
+    setTimeout(() => loadProgrammes(), 1500);
+  } catch(e) {
+    toast('Erreur : ' + e.message, 'e');
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('sending');
+    btn.innerHTML = orig;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
 // TABS / MODAL / TOAST / UTILS
 // ═══════════════════════════════════════════════════════════════
 function switchTab(id, btn) {
@@ -983,6 +1501,15 @@ function switchTab(id, btn) {
   if (id==='avis' && cfg.scriptUrl && cfg.secret) loadAvis();
   if (id==='listing' && cfg.scriptUrl && cfg.secret) loadEnvois();
   if (id==='programmes' && cfg.scriptUrl && cfg.secret) loadProgrammes();
+  if (id==='dentistes' && cfg.scriptUrl && cfg.secret) {
+    loadDentistes();
+    // Charger aussi les stats pour afficher les compteurs par praticien
+    if (!window._lastStats) {
+      apiGet('stats').then(r => {
+        if (r.success) { window._lastStats = r.stats; renderDentistesList(); }
+      }).catch(() => {});
+    }
+  }
 }
 
 function openModal()  { document.getElementById('overlay').classList.add('open'); }
