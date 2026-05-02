@@ -1011,8 +1011,26 @@ async function loadEnvois() {
   const ico = document.getElementById('r2');
   if (ico) ico.classList.add('spinning');
   try {
-    const d = await apiGet('envois');
-    allEnvois = d.envois || [];
+    const [envoisRes, avisRes] = await Promise.all([
+      apiGet('envois'),
+      apiGet('avis')
+    ]);
+    allEnvois = envoisRes.envois || [];
+    
+    // Croiser avec les avis pour détecter les "Répondu"
+    const emailsRepondus = new Set(
+      (avisRes.avis || []).map(a => (a.email || '').toLowerCase().trim()).filter(Boolean)
+    );
+    
+    // Enrichir chaque envoi avec le statut "Répondu" si l'email apparaît dans les avis
+    allEnvois.forEach(env => {
+      const email = (env.email || '').toLowerCase().trim();
+      if (email && emailsRepondus.has(email)) {
+        env.statusOriginal = env.statut;  // garde l'original pour debug
+        env.statut = 'Répondu';
+      }
+    });
+    
     pageEnvois = 1;
     document.getElementById('badgeEnvois').textContent = allEnvois.length;
     renderEnvoisPage();
