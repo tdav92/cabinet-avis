@@ -1308,7 +1308,9 @@ async function loadProgrammes() {
 
 function renderProgrammes() {
   const body = document.getElementById('programmesBody');
-  if (!allProgrammes.length) {
+  // Filtrer pour n'afficher que les envois "En attente" (les autres restent en base pour l'historique)
+  const enAttente = allProgrammes.filter(p => p.statut === 'En attente');
+  if (!enAttente.length) {
     body.innerHTML = '<div class="empty"><div class="empty-ico">✨</div>Aucun envoi programmé<div style="font-size:12px;color:var(--ink-mute);margin-top:8px;">Importez un CSV Doctolib pour programmer des envois groupés</div></div>';
     return;
   }
@@ -1318,7 +1320,7 @@ function renderProgrammes() {
       <th>Créé le</th><th>Patient</th><th>E-mail</th><th>Praticien</th>
       <th>Envoi prévu</th><th>Statut</th><th>Tentatives</th>
     </tr></thead>
-    <tbody>${allProgrammes.map(p => {
+    <tbody>${enAttente.map(p => {
       const cls = p.statut === 'Envoyé' ? 'done' : p.statut === 'En attente' ? 'waiting' : 'err';
       return `
       <tr>
