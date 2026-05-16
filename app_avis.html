@@ -114,6 +114,8 @@
   input::placeholder{color:var(--ink-faint);font-style:italic;}
   input.invalid{border-color:var(--danger);background:var(--danger-bg);}
   .hint-error{font-size:11px;color:var(--danger);margin-top:4px;display:none;}
+  .hint-dup{font-size:12px;color:#a85d00;background:#fff4e1;border:1px solid #f0c890;padding:8px 12px;border-radius:8px;margin-top:8px;line-height:1.4;}
+  .hint-dup strong{color:#7a4400;}
   .hint-error.show{display:block;}
   .preview-box{background:var(--ivory-soft);border:1px solid var(--rule-soft);border-radius:var(--radius);padding:18px;font-size:13px;color:var(--ink-soft);line-height:1.7;margin-top:8px;}
   .preview-lbl{font-size:10px;font-weight:700;color:var(--terracotta);text-transform:uppercase;letter-spacing:0.18em;margin-bottom:10px;}
@@ -135,6 +137,9 @@
   .tbl{width:100%;border-collapse:collapse;min-width:1100px;font-size:13.5px;}
   .tbl thead tr{border-bottom:1px solid var(--rule);}
   .tbl thead th{padding:14px 16px;text-align:left;font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);background:var(--ivory-soft);position:sticky;top:0;white-space:nowrap;}
+  .tbl thead th.th-sort{cursor:pointer;user-select:none;transition:color 0.15s, background 0.15s;}
+  .tbl thead th.th-sort:hover{color:var(--terracotta);background:var(--terracotta-mist);}
+  .tbl thead th.th-sort.active{color:var(--terracotta);}
   .tbl tbody tr{border-bottom:1px solid var(--rule-soft);transition:background 0.15s;}
   .tbl tbody tr:hover{background:var(--ivory-soft);}
   .tbl tbody tr.low-note{background:linear-gradient(90deg,var(--terracotta-mist) 0%,transparent 80%);}
@@ -355,8 +360,9 @@
           </div>
           <div class="fg form-full">
             <label>E-mail du patient</label>
-            <input type="email" id="email" placeholder="patient@exemple.fr" oninput="validateEmail();checkReady()" autocomplete="email">
+            <input type="email" id="email" placeholder="patient@exemple.fr" oninput="validateEmail();checkReady();checkEmailDuplicate()" autocomplete="email">
             <div class="hint-error" id="emailErr">Format d'email invalide</div>
+            <div class="hint-dup" id="emailDupWarn" style="display:none;"></div>
           </div>
           <div class="fg form-full">
             <label>Praticien</label>
@@ -645,6 +651,47 @@ let allEnvois = [];
 let allProgrammes = [];
 let pageAvis = 1;
 let pageEnvois = 1;
+
+// État du tri (colonne + ordre) pour les tableaux Envois et Programmés
+let envoisSort = { key: 'date', asc: false };   // par défaut : date d'envoi décroissante (plus récent en haut)
+let progSort   = { key: 'dateEnvoi', asc: true }; // par défaut : envoi prévu croissant (le plus proche en haut)
+
+// Comparateur générique : sait gérer dates fr, nombres et strings
+function compareValues(a, b, key) {
+  const va = a[key], vb = b[key];
+  // Tente parsing date fr
+  const da = (typeof va === 'string') ? parseFrDate(va) : null;
+  const db = (typeof vb === 'string') ? parseFrDate(vb) : null;
+  if (da && db) return da - db;
+  // Nombres
+  const na = Number(va), nb = Number(vb);
+  if (!isNaN(na) && !isNaN(nb) && va !== '' && vb !== '') return na - nb;
+  // Strings (avec gestion des accents)
+  return String(va || '').localeCompare(String(vb || ''), 'fr', { sensitivity: 'base' });
+}
+
+// Tri générique d'un tableau
+function sortRows(rows, sortState) {
+  const sorted = rows.slice().sort((a, b) => compareValues(a, b, sortState.key));
+  return sortState.asc ? sorted : sorted.reverse();
+}
+
+// Bascule le tri d'une colonne, ou inverse l'ordre si déjà actif
+function toggleSort(table, key) {
+  const state = table === 'envois' ? envoisSort : progSort;
+  if (state.key === key) state.asc = !state.asc;
+  else { state.key = key; state.asc = true; }
+  if (table === 'envois') renderEnvoisPage();
+  else renderProgrammes();
+}
+
+// Génère le HTML d'un <th> triable avec indicateur ↑ ↓
+function thSort(table, key, label) {
+  const state = table === 'envois' ? envoisSort : progSort;
+  const active = state.key === key;
+  const arrow = active ? (state.asc ? ' ↑' : ' ↓') : '';
+  return `<th class="th-sort${active ? ' active' : ''}" onclick="toggleSort('${table}','${key}')">${label}${arrow}</th>`;
+}
 const PAGE_SIZE = 20;
 let sortAvisBy = null;  // 'date' | 'note' | 'patient' | 'praticien'
 let sortAvisDir = 'desc';  // 'asc' | 'desc'
@@ -809,6 +856,60 @@ function setCivility(btn, val) {
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// ═══════════════════════════════════════════════════════════════
+// DÉTECTION DE DOUBLON D'ENVOI (recherche sur 60 jours)
+// ═══════════════════════════════════════════════════════════════
+const DUPLICATE_WINDOW_DAYS = 60;
+
+// Parse une date au format "dd/MM/yyyy HH:mm" ou "dd/MM/yyyy"
+function parseFrDate(s) {
+  if (!s) return null;
+  const m = String(s).match(/(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{1,2}))?/);
+  if (!m) return null;
+  return new Date(+m[3], +m[2] - 1, +m[1], +(m[4] || 0), +(m[5] || 0));
+}
+
+// Cherche l'envoi le plus récent (≤60j) à cet email dans Envois + Programmés
+// Retourne null si aucun, sinon { date, source, statut }
+function findRecentEnvoi(email) {
+  const target = String(email || '').toLowerCase().trim();
+  if (!target) return null;
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - DUPLICATE_WINDOW_DAYS);
+  let best = null;
+  // 1. Envois (historique des envois effectués)
+  (allEnvois || []).forEach(e => {
+    if (String(e.email || '').toLowerCase().trim() !== target) return;
+    const statut = String(e.statut || '').toLowerCase();
+    if (statut.includes('erreur') || statut.includes('échec') || statut.includes('echec')) return;
+    const d = parseFrDate(e.date);
+    if (!d || d < cutoff) return;
+    if (!best || d > best.date) best = { date: d, dateStr: e.date, source: 'envoi', statut: e.statut };
+  });
+  // 2. Programmés en attente
+  (allProgrammes || []).forEach(p => {
+    if (String(p.email || '').toLowerCase().trim() !== target) return;
+    const statut = String(p.statut || '');
+    if (statut === 'Annule' || statut === 'Annulé' || statut === 'Abandonne' || statut === 'Abandonné') return;
+    const d = parseFrDate(p.dateCreation);
+    if (!d || d < cutoff) return;
+    if (!best || d > best.date) best = { date: d, dateStr: p.dateCreation, source: 'programme', statut: statut };
+  });
+  return best;
+}
+
+// Affiche/cache le warning sous le champ email selon ce qu'on trouve
+function checkEmailDuplicate() {
+  const email = document.getElementById('email').value.trim();
+  const warn = document.getElementById('emailDupWarn');
+  if (!warn) return;
+  if (!EMAIL_RE.test(email)) { warn.style.display = 'none'; return; }
+  const found = findRecentEnvoi(email);
+  if (!found) { warn.style.display = 'none'; return; }
+  warn.innerHTML = `⚠ Ce patient a déjà reçu une demande d'avis le <strong>${escapeHtml(found.dateStr)}</strong>`;
+  warn.style.display = 'block';
+}
 function validateEmail() {
   const el = document.getElementById('email');
   const err = document.getElementById('emailErr');
@@ -852,6 +953,22 @@ document.addEventListener('DOMContentLoaded', () => {
 // ENVOI QUESTIONNAIRE (programmé ou immédiat)
 // ═══════════════════════════════════════════════════════════════
 async function sendQuestionnaire(sendNow) {
+  // 🔍 Check doublon avant envoi
+  const emailInput = document.getElementById('email').value.trim();
+  const prenomInput = document.getElementById('prenom').value.trim();
+  const nomInput = document.getElementById('nom').value.trim().toUpperCase();
+  const dup = findRecentEnvoi(emailInput);
+  if (dup) {
+    const action = sendNow ? 'envoyer maintenant' : 'programmer';
+    const ok = confirm(
+      `⚠ ATTENTION — Envoi en doublon\n\n` +
+      `${prenomInput} ${nomInput} (${emailInput})\n` +
+      `a déjà reçu une demande d'avis le ${dup.dateStr}.\n\n` +
+      `Voulez-vous vraiment ${action} une nouvelle demande ?`
+    );
+    if (!ok) return;
+  }
+
   const btn = sendNow ? document.getElementById('btnSendNow') : document.getElementById('btnSchedule');
   const other = sendNow ? document.getElementById('btnSchedule') : document.getElementById('btnSendNow');
   btn.disabled = true; other.disabled = true; btn.classList.add('sending');
@@ -884,6 +1001,8 @@ async function sendQuestionnaire(sendNow) {
     ['prenom','nom','email','praticien'].forEach(id => document.getElementById(id).value = '');
     civility = '';
     document.querySelectorAll('.civ-btn').forEach(b => b.classList.remove('selected'));
+    const dupWarn = document.getElementById('emailDupWarn');
+    if (dupWarn) dupWarn.style.display = 'none';
     updatePreview();
 
     // Rafraîchir les badges
@@ -1250,10 +1369,12 @@ function renderEnvoisPage() {
   const filtered = allEnvois.filter(e =>
     ((e.prenom||'')+' '+(e.nom||'')+' '+(e.email||'')+' '+(e.praticien||'')).toLowerCase().includes(q)
   );
-  const total = filtered.length;
+  // 🔃 Tri selon l'état envoisSort
+  const sorted = sortRows(filtered, envoisSort);
+  const total = sorted.length;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   if (pageEnvois > totalPages) pageEnvois = totalPages;
-  const slice = filtered.slice((pageEnvois-1)*PAGE_SIZE, pageEnvois*PAGE_SIZE);
+  const slice = sorted.slice((pageEnvois-1)*PAGE_SIZE, pageEnvois*PAGE_SIZE);
   const body = document.getElementById('envoiBody');
 
   if (!total) {
@@ -1265,8 +1386,12 @@ function renderEnvoisPage() {
   body.innerHTML = `
   <table class="tbl">
     <thead><tr>
-      <th>Date d'envoi</th><th>Civilité</th><th>Patient</th><th>E-mail</th>
-      <th>Praticien</th><th>Statut</th>
+      ${thSort('envois','date',"Date d'envoi")}
+      ${thSort('envois','civ','Civilité')}
+      ${thSort('envois','nom','Patient')}
+      ${thSort('envois','email','E-mail')}
+      ${thSort('envois','praticien','Praticien')}
+      ${thSort('envois','statut','Statut')}
     </tr></thead>
     <tbody>${slice.map(e => {
       const isErr = /erreur|échec/i.test(e.statut||'');
@@ -1314,13 +1439,20 @@ function renderProgrammes() {
     body.innerHTML = '<div class="empty"><div class="empty-ico">✨</div>Aucun envoi programmé<div style="font-size:12px;color:var(--ink-mute);margin-top:8px;">Importez un CSV Doctolib pour programmer des envois groupés</div></div>';
     return;
   }
+  // 🔃 Tri selon l'état progSort
+  const sorted = sortRows(enAttente, progSort);
   body.innerHTML = `
   <table class="tbl">
     <thead><tr>
-      <th>Créé le</th><th>Patient</th><th>E-mail</th><th>Praticien</th>
-      <th>Envoi prévu</th><th>Statut</th><th>Tentatives</th>
+      ${thSort('prog','dateCreation','Créé le')}
+      ${thSort('prog','nom','Patient')}
+      ${thSort('prog','email','E-mail')}
+      ${thSort('prog','praticien','Praticien')}
+      ${thSort('prog','dateEnvoi','Envoi prévu')}
+      ${thSort('prog','statut','Statut')}
+      ${thSort('prog','tentatives','Tentatives')}
     </tr></thead>
-    <tbody>${enAttente.map(p => {
+    <tbody>${sorted.map(p => {
       const cls = p.statut === 'Envoyé' ? 'done' : p.statut === 'En attente' ? 'waiting' : 'err';
       return `
       <tr>
